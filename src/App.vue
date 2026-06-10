@@ -1,7 +1,7 @@
 <template>
-  <PeptideCalculator />
+	<PeptideCalculator />
 </template>
 
 <script setup>
-import PeptideCalculator from './components/PeptideCalculator.vue';
+	import PeptideCalculator from './components/PeptideCalculator.vue';
 </script>
