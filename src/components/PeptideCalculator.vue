@@ -14,29 +14,35 @@
 		<main class="calc-main">
 			<!-- Peptide Selector -->
 			<section class="peptide-select-section">
-				<label class="field-label">SELECT PEPTIDE</label>
-				<div class="select-wrapper">
-					<select
-						v-model="selectedPeptide"
-						class="peptide-select"
-						@change="applyPreset"
-					>
-						<option value="">— Custom / No Preset —</option>
-						<optgroup
-							v-for="group in peptideGroups"
-							:key="group.label"
-							:label="group.label"
+				<div>
+					<label class="field-label">SELECT PEPTIDE</label>
+					<div class="select-wrapper">
+						<select
+							v-model="selectedPeptide"
+							class="peptide-select"
+							@change="applyPreset"
 						>
-							<option
-								v-for="p in group.peptides"
-								:key="p.id"
-								:value="p.id"
+							<option value="">— Custom / No Preset —</option>
+							<optgroup
+								v-for="group in peptideGroups"
+								:key="group.label"
+								:label="group.label"
 							>
-								{{ p.name }}
-							</option>
-						</optgroup>
-					</select>
-					<span class="select-arrow">▾</span>
+								<option
+									v-for="p in group.peptides"
+									:key="p.id"
+									:value="p.id"
+								>
+									{{ p.name }}
+								</option>
+							</optgroup>
+						</select>
+						<span class="select-arrow">▾</span>
+					</div>
+					<p class="preset-help">
+						Selecting a peptide loads example preset values, not
+						recommendations.
+					</p>
 				</div>
 
 				<!-- Preset badge -->
@@ -53,190 +59,102 @@
 				</transition>
 			</section>
 
+			<!-- Advice banner from preset -->
+			<section
+				class="notes-section"
+				v-if="currentPeptide && currentPeptide.notes"
+			>
+				<transition name="fade">
+					<div class="notes-banner">
+						<span class="notes-icon">ℹ</span>
+						<div>
+							<strong
+								>{{ currentPeptide.name }} Preset Notes</strong
+							>
+							<p>{{ currentPeptide.notes }}</p>
+						</div>
+					</div>
+				</transition>
+			</section>
+
 			<!-- 3-column inputs -->
 			<section class="inputs-grid">
-				<!-- Dose -->
-				<div class="input-card">
-					<div class="card-header">
-						<span class="card-num">01</span>
-						<div>
-							<h3 class="card-title">Desired Dose</h3>
-							<p class="card-hint">per injection</p>
-						</div>
-					</div>
+				<InputCard
+					num="01"
+					title="Desired Dose"
+					hint="per injection"
+					:options="doseOptions"
+					unit="mg"
+					:chip="dose"
+					:custom="customDose"
+					custom-placeholder="e.g. 0.3"
+					:custom-min="0.001"
+					:custom-step="0.001"
+					:preset-value="currentPeptide?.defaults.dose ?? null"
+					av-label="DOSE"
+					:display-value="displayDose"
+					:mcg="
+						effectiveDose
+							? `${(effectiveDose * 1000).toFixed(0)} mcg`
+							: null
+					"
+					@update:chip="
+						dose = $event;
+						customDose = '';
+					"
+					@update:custom="
+						customDose = $event;
+						dose = null;
+					"
+				/>
 
-					<div class="chip-group">
-						<button
-							v-for="v in doseOptions"
-							:key="v"
-							class="chip"
-							:class="{
-								active: dose === v,
-								recommended:
-									currentPeptide &&
-									currentPeptide.defaults.dose === v,
-							}"
-							@click="
-								dose = v;
-								customDose = '';
-							"
-						>
-							{{ v }}mg<span
-								v-if="
-									currentPeptide &&
-									currentPeptide.defaults.dose === v
-								"
-								class="rec-dot"
-								title="Recommended"
-								>★</span
-							>
-						</button>
-					</div>
+				<InputCard
+					num="02"
+					title="Vial Strength"
+					hint="total peptide in vial"
+					:options="strengthOptions"
+					unit="mg"
+					:chip="strength"
+					:custom="customStrength"
+					custom-placeholder="e.g. 20"
+					:custom-min="0.1"
+					:custom-step="0.1"
+					:preset-value="currentPeptide?.defaults.strength ?? null"
+					av-label="VIAL"
+					:display-value="displayStrength"
+					@update:chip="
+						strength = $event;
+						customStrength = '';
+					"
+					@update:custom="
+						customStrength = $event;
+						strength = null;
+					"
+				/>
 
-					<div class="custom-row">
-						<label class="custom-label">Custom (mg)</label>
-						<input
-							v-model="customDose"
-							type="number"
-							class="custom-input"
-							placeholder="e.g. 0.3"
-							min="0.001"
-							step="0.001"
-							@input="dose = null"
-						/>
-					</div>
-
-					<div class="active-val">
-						<span class="av-label">DOSE</span>
-						<span class="av-num"
-							>{{ displayDose
-							}}<span class="av-unit">mg</span></span
-						>
-						<span v-if="effectiveDose" class="av-mcg"
-							>= {{ (effectiveDose * 1000).toFixed(0) }} mcg</span
-						>
-					</div>
-				</div>
-
-				<!-- Vial Strength -->
-				<div class="input-card">
-					<div class="card-header">
-						<span class="card-num">02</span>
-						<div>
-							<h3 class="card-title">Vial Strength</h3>
-							<p class="card-hint">total peptide in vial</p>
-						</div>
-					</div>
-
-					<div class="chip-group">
-						<button
-							v-for="v in strengthOptions"
-							:key="v"
-							class="chip"
-							:class="{
-								active: strength === v,
-								recommended:
-									currentPeptide &&
-									currentPeptide.defaults.strength === v,
-							}"
-							@click="
-								strength = v;
-								customStrength = '';
-							"
-						>
-							{{ v }}mg<span
-								v-if="
-									currentPeptide &&
-									currentPeptide.defaults.strength === v
-								"
-								class="rec-dot"
-								title="Recommended"
-								>★</span
-							>
-						</button>
-					</div>
-
-					<div class="custom-row">
-						<label class="custom-label">Custom (mg)</label>
-						<input
-							v-model="customStrength"
-							type="number"
-							class="custom-input"
-							placeholder="e.g. 20"
-							min="0.1"
-							step="0.1"
-							@input="strength = null"
-						/>
-					</div>
-
-					<div class="active-val">
-						<span class="av-label">VIAL</span>
-						<span class="av-num"
-							>{{ displayStrength
-							}}<span class="av-unit">mg</span></span
-						>
-					</div>
-				</div>
-
-				<!-- Bac Water -->
-				<div class="input-card">
-					<div class="card-header">
-						<span class="card-num">03</span>
-						<div>
-							<h3 class="card-title">Bac Water</h3>
-							<p class="card-hint">bacteriostatic water added</p>
-						</div>
-					</div>
-
-					<div class="chip-group">
-						<button
-							v-for="v in waterOptions"
-							:key="v"
-							class="chip"
-							:class="{
-								active: water === v,
-								recommended:
-									currentPeptide &&
-									currentPeptide.defaults.water === v,
-							}"
-							@click="
-								water = v;
-								customWater = '';
-							"
-						>
-							{{ v }}mL<span
-								v-if="
-									currentPeptide &&
-									currentPeptide.defaults.water === v
-								"
-								class="rec-dot"
-								title="Recommended"
-								>★</span
-							>
-						</button>
-					</div>
-
-					<div class="custom-row">
-						<label class="custom-label">Custom (mL)</label>
-						<input
-							v-model="customWater"
-							type="number"
-							class="custom-input"
-							placeholder="e.g. 2.5"
-							min="0.1"
-							step="0.1"
-							@input="water = null"
-						/>
-					</div>
-
-					<div class="active-val">
-						<span class="av-label">WATER</span>
-						<span class="av-num"
-							>{{ displayWater
-							}}<span class="av-unit">mL</span></span
-						>
-					</div>
-				</div>
+				<InputCard
+					num="03"
+					title="Bac Water"
+					hint="bacteriostatic water added"
+					:options="waterOptions"
+					unit="mL"
+					:chip="water"
+					:custom="customWater"
+					custom-placeholder="e.g. 2.5"
+					:custom-min="0.1"
+					:custom-step="0.1"
+					:preset-value="currentPeptide?.defaults.water ?? null"
+					av-label="WATER"
+					:display-value="displayWater"
+					@update:chip="
+						water = $event;
+						customWater = '';
+					"
+					@update:custom="
+						customWater = $event;
+						water = null;
+					"
+				/>
 			</section>
 
 			<!-- Results -->
@@ -264,76 +182,35 @@
 
 						<!-- Stat cards -->
 						<div class="stat-cards">
-							<div class="stat-card" :class="statusClass">
-								<span class="stat-label">PEPTIDE DOSE</span>
-								<span class="stat-value"
-									>{{ effectiveDose }}
-									<span class="stat-unit">mg</span>
-								</span>
-								<span class="stat-mcg"
-									>{{
-										(effectiveDose * 1000).toFixed(0)
-									}}
-									mcg</span
-								>
-								<div
-									v-if="statusMsg"
-									class="status-badge"
-									:class="statusClass"
-								>
-									{{ statusMsg }}
-								</div>
-							</div>
-
-							<div class="stat-card">
-								<span class="stat-label">DRAW SYRINGE TO</span>
-								<span class="stat-value"
-									>{{ syringeUnits.toFixed(1) }}
-									<span class="stat-unit">units</span>
-								</span>
-								<span class="stat-mcg"
-									>{{ drawVolume.toFixed(3) }} mL</span
-								>
-							</div>
-
-							<div class="stat-card">
-								<span class="stat-label">DOSES PER VIAL</span>
-								<span class="stat-value"
-									>{{ dosesPerVial.toFixed(1) }}
-									<span class="stat-unit">doses</span>
-								</span>
-								<span class="stat-mcg">full doses</span>
-							</div>
-
-							<div class="stat-card highlight">
-								<span class="stat-label">CONCENTRATION</span>
-								<span class="stat-value"
-									>{{ concentration.toFixed(3) }}
-									<span class="stat-unit">mg/mL</span>
-								</span>
-								<span class="stat-mcg"
-									>{{
-										(concentration * 1000).toFixed(0)
-									}}
-									mcg/mL</span
-								>
-							</div>
+							<StatCard
+								label="PEPTIDE DOSE"
+								:value="effectiveDose"
+								unit="mg"
+								:sub="`${(effectiveDose * 1000).toFixed(0)} mcg`"
+								:status-msg="statusMsg"
+								:status-class="statusClass"
+							/>
+							<StatCard
+								label="DRAW SYRINGE TO"
+								:value="syringeUnits.toFixed(1)"
+								unit="units"
+								:sub="`${drawVolume.toFixed(3)} mL`"
+							/>
+							<StatCard
+								label="DOSES PER VIAL"
+								:value="dosesPerVial.toFixed(1)"
+								unit="doses"
+								sub="full doses"
+							/>
+							<StatCard
+								label="CONCENTRATION"
+								:value="concentration.toFixed(3)"
+								unit="mg/mL"
+								:sub="`${(concentration * 1000).toFixed(0)} mcg/mL`"
+								:highlight="true"
+							/>
 						</div>
 					</div>
-
-					<!-- Advice banner from preset -->
-					<transition name="fade">
-						<div
-							v-if="currentPeptide && currentPeptide.notes"
-							class="notes-banner"
-						>
-							<span class="notes-icon">ℹ</span>
-							<div>
-								<strong>{{ currentPeptide.name }} Notes</strong>
-								<p>{{ currentPeptide.notes }}</p>
-							</div>
-						</div>
-					</transition>
 				</section>
 			</transition>
 
@@ -357,6 +234,8 @@
 <script setup>
 	import { ref, computed } from 'vue';
 	import SyringeVisual from './SyringeVisual.vue';
+	import InputCard from './InputCard.vue';
+	import StatCard from './StatCard.vue';
 
 	// ─── Peptide database ─────────────────────────────────────────────────────────
 	const peptideGroups = [
@@ -494,7 +373,7 @@
 					id: 'motsc',
 					name: 'MOTS-c',
 					description: 'Mitochondrial peptide',
-					defaults: { dose: 5, strength: 10, water: 2 },
+					defaults: { dose: 5, strength: 10, water: 1 },
 					notes: 'Dose range: 5–15mg, 1–3× weekly. Start at lower end.',
 				},
 				{
@@ -529,9 +408,36 @@
 	const customStrength = ref('');
 	const customWater = ref('');
 
-	const doseOptions = [0.1, 0.25, 0.5, 1, 2.5, 5, 7.5, 10, 12.5, 15, 50];
-	const strengthOptions = [5, 10, 15, 30, 50, 100, 1000];
-	const waterOptions = [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 5.0];
+	function buildOptions(defaultValues, extraValues = []) {
+		return [...new Set([...defaultValues, ...extraValues])].sort(
+			(a, b) => a - b
+		);
+	}
+
+	const doseOptions = buildOptions(
+		peptideGroups
+			.map((group) =>
+				group.peptides.map((peptide) => peptide.defaults.dose)
+			)
+			.flat(),
+		[7.5, 10, 12.5, 15]
+	);
+	const strengthOptions = buildOptions(
+		peptideGroups
+			.map((group) =>
+				group.peptides.map((peptide) => peptide.defaults.strength)
+			)
+			.flat(),
+		[50, 60, 100]
+	);
+	const waterOptions = buildOptions(
+		peptideGroups
+			.map((group) =>
+				group.peptides.map((peptide) => peptide.defaults.water)
+			)
+			.flat(),
+		[0.5, 1, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0]
+	);
 
 	// ─── Computed ─────────────────────────────────────────────────────────────────
 	const currentPeptide = computed(
@@ -673,7 +579,10 @@
 
 	// ── Peptide Select ────────────────────────────────────────────────────────────
 	.peptide-select-section {
+		display: flex;
+		flex-direction: row;
 		margin-bottom: 40px;
+		justify-content: space-between;
 	}
 
 	.field-label {
@@ -688,6 +597,14 @@
 	.select-wrapper {
 		position: relative;
 		max-width: 420px;
+	}
+
+	.preset-help {
+		max-width: 420px;
+		margin-top: 10px;
+		font-size: 0.78rem;
+		line-height: 1.5;
+		color: @text-muted;
 	}
 
 	.peptide-select {
@@ -728,9 +645,10 @@
 	.preset-badge {
 		display: flex;
 		align-items: center;
+		align-self: flex-end;
 		gap: 10px;
-		margin-top: 12px;
 		max-width: 420px;
+		height: 46px;
 		background: fade(@teal, 8%);
 		border: 1px solid fade(@teal, 25%);
 		border-radius: @radius;
@@ -762,183 +680,27 @@
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
 		gap: 20px;
-		margin-bottom: 32px;
+		margin-bottom: 24px;
 
 		@media (max-width: 800px) {
 			grid-template-columns: 1fr;
 		}
 	}
 
-	.input-card {
-		background: @surface;
-		border: 1px solid @border;
-		border-radius: @radius-lg;
-		padding: 24px;
-		display: flex;
-		flex-direction: column;
-		gap: 16px;
-		transition: border-color 0.2s;
-
-		&:hover {
-			border-color: fade(@teal, 30%);
-		}
-	}
-
-	.card-header {
-		display: flex;
-		align-items: flex-start;
-		gap: 12px;
-	}
-
-	.card-num {
-		font-family: @mono;
-		font-size: 0.7rem;
-		color: @teal;
-		opacity: 0.7;
-		padding-top: 3px;
-		letter-spacing: 0.05em;
-	}
-
-	.card-title {
-		font-size: 0.95rem;
-		font-weight: 600;
-		color: @text;
-		line-height: 1.2;
-	}
-
-	.card-hint {
-		font-size: 0.75rem;
-		color: @text-muted;
-		margin-top: 2px;
-	}
-
-	.chip-group {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 6px;
-	}
-
-	.chip {
-		background: @surface2;
-		border: 1px solid @border;
-		color: @text-muted;
-		border-radius: 6px;
-		padding: 5px 10px;
-		font-family: @mono;
-		font-size: 0.78rem;
-		cursor: pointer;
-		transition: all 0.12s;
-		position: relative;
-
-		&:hover {
-			border-color: @teal;
-			color: @teal;
-		}
-
-		&.active {
-			background: fade(@teal, 15%);
-			border-color: @teal;
-			color: @teal;
-			font-weight: 600;
-		}
-
-		&.recommended:not(.active) {
-			border-color: fade(@amber, 40%);
-			color: @amber;
-		}
-	}
-
-	.rec-dot {
-		font-size: 0.6rem;
-		vertical-align: super;
-		margin-left: 2px;
-		color: @amber;
-	}
-
-	.custom-row {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-	}
-
-	.custom-label {
-		font-size: 0.72rem;
-		color: @text-muted;
-		letter-spacing: 0.06em;
-		flex-shrink: 0;
-	}
-
-	.custom-input {
-		flex: 1;
-		background: @surface2;
-		border: 1px solid @border;
-		border-radius: 6px;
-		color: @text;
-		font-family: @mono;
-		font-size: 0.85rem;
-		padding: 7px 10px;
-		outline: none;
-		transition: border-color 0.15s;
-
-		&:focus {
-			border-color: @teal;
-		}
-		&::placeholder {
-			color: fade(@text-muted, 50%);
-		}
-
-		&::-webkit-outer-spin-button,
-		&::-webkit-inner-spin-button {
-			-webkit-appearance: none;
-		}
-	}
-
-	.active-val {
-		display: flex;
-		align-items: baseline;
-		gap: 6px;
-		padding-top: 8px;
-		border-top: 1px solid @border;
-	}
-
-	.av-label {
-		font-family: @mono;
-		font-size: 0.65rem;
-		color: @text-muted;
-		letter-spacing: 0.1em;
-	}
-
-	.av-num {
-		font-family: @mono;
-		font-size: 1.4rem;
-		font-weight: 600;
-		color: @teal;
-		line-height: 1;
-	}
-
-	.av-unit {
-		font-size: 0.75rem;
-		color: @text-muted;
-		margin-left: 2px;
-	}
-
-	.av-mcg {
-		font-family: @mono;
-		font-size: 0.72rem;
-		color: @text-muted;
-		margin-left: 4px;
+	.notes-section {
+		margin-bottom: 24px;
 	}
 
 	// ── Results ───────────────────────────────────────────────────────────────────
 	.results-section {
-		margin-bottom: 32px;
+		margin-bottom: 24px;
 	}
 
 	.results-grid {
 		display: grid;
 		grid-template-columns: 280px 1fr;
 		gap: 20px;
-		align-items: start;
+		align-items: stretch;
 
 		@media (max-width: 800px) {
 			grid-template-columns: 1fr;
@@ -969,7 +731,7 @@
 
 	.syringe-ml {
 		font-family: @mono;
-		font-size: 0.8rem;
+		font-size: 1.5rem;
 		color: @teal;
 		margin-top: 4px;
 	}
@@ -977,77 +739,13 @@
 	.stat-cards {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
+		grid-auto-rows: 1fr;
 		gap: 14px;
+		height: 100%;
 
 		@media (max-width: 560px) {
 			grid-template-columns: 1fr;
-		}
-	}
-
-	.stat-card {
-		background: @surface;
-		border: 1px solid @border;
-		border-radius: @radius-lg;
-		padding: 20px;
-		display: flex;
-		flex-direction: column;
-		gap: 4px;
-
-		&.highlight {
-			border-color: fade(@teal, 35%);
-			background: fade(@teal, 5%);
-		}
-
-		&.warn {
-			border-color: fade(@amber, 40%);
-		}
-		&.error {
-			border-color: fade(@red, 40%);
-		}
-	}
-
-	.stat-label {
-		font-family: @mono;
-		font-size: 0.65rem;
-		letter-spacing: 0.1em;
-		color: @text-muted;
-	}
-
-	.stat-value {
-		font-family: @mono;
-		font-size: 2rem;
-		font-weight: 600;
-		color: @text;
-		line-height: 1.1;
-	}
-
-	.stat-unit {
-		font-size: 0.85rem;
-		color: @text-muted;
-		font-weight: 400;
-	}
-
-	.stat-mcg {
-		font-family: @mono;
-		font-size: 0.75rem;
-		color: @text-muted;
-	}
-
-	.status-badge {
-		margin-top: 8px;
-		display: inline-block;
-		padding: 3px 8px;
-		border-radius: 4px;
-		font-size: 0.72rem;
-		font-weight: 500;
-
-		&.warn {
-			background: fade(@amber, 15%);
-			color: @amber;
-		}
-		&.error {
-			background: fade(@red, 15%);
-			color: @red;
+			height: auto;
 		}
 	}
 
@@ -1110,7 +808,7 @@
 		background: @surface;
 		border: 1px solid @border;
 		border-radius: @radius;
-		font-size: 0.75rem;
+		font-size: 1rem;
 		color: @text-muted;
 		line-height: 1.6;
 

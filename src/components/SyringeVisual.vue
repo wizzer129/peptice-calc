@@ -6,9 +6,9 @@
 			class="syringe-svg"
 		>
 			<!-- Needle tip -->
-			<polygon points="40,210 36,198 44,198" fill="#8b949e" />
+			<polygon points="40,210 36,198 44,198" class="needle-part" />
 			<!-- Needle shaft -->
-			<rect x="38.5" y="190" width="3" height="10" fill="#8b949e" />
+			<rect x="38.5" y="190" width="3" height="10" class="needle-part" />
 
 			<!-- Barrel body -->
 			<rect
@@ -17,8 +17,7 @@
 				width="36"
 				height="162"
 				rx="4"
-				fill="#161b22"
-				stroke="#2d3748"
+				class="barrel-body"
 				stroke-width="1.5"
 			/>
 
@@ -29,17 +28,19 @@
 				width="32"
 				:height="fillHeight"
 				:transform="`translate(0, ${-fillHeight})`"
-				:fill="fillColor"
+				:class="['fill-level', fillClass]"
 				rx="2"
-				style="
-					transition:
-						height 0.4s ease,
-						fill 0.3s ease;
-				"
 			/>
 
 			<!-- Plunger rod -->
-			<rect x="36" y="2" width="8" height="34" rx="2" fill="#2d3748" />
+			<rect
+				x="36"
+				y="2"
+				width="8"
+				height="34"
+				rx="2"
+				class="plunger-rod"
+			/>
 			<!-- Plunger head -->
 			<rect
 				x="18"
@@ -47,13 +48,12 @@
 				width="44"
 				height="12"
 				rx="3"
-				fill="#2d3748"
-				stroke="#8b949e"
+				class="plunger-head"
 				stroke-width="1"
 			/>
 
 			<!-- Tick marks -->
-			<g stroke="#2d3748" stroke-width="1">
+			<g class="tick-marks" stroke-width="1">
 				<line
 					v-for="i in 10"
 					:key="i"
@@ -79,8 +79,8 @@
 				x="14"
 				:y="30 + i * 16 + 4"
 				font-family="IBM Plex Mono, monospace"
-				font-size="7"
-				fill="#8b949e"
+				font-size="8"
+				class="unit-label"
 				text-anchor="middle"
 			>
 				{{ (10 - i) * 10 }}
@@ -93,9 +93,28 @@
 				:y1="drawY"
 				x2="60"
 				:y2="drawY"
-				stroke="#00d4b8"
+				:class="['draw-line', `accent-${fillTone}`]"
 				stroke-width="1.5"
 				stroke-dasharray="3 2"
+			/>
+
+			<!-- Fill level to label connector -->
+			<line
+				v-if="drawY !== null"
+				x1="60"
+				:y1="drawY + 1"
+				x2="108"
+				:y2="drawY + 1"
+				:class="['connector-line', `accent-${fillTone}`]"
+				stroke-width="1.8"
+				stroke-linecap="round"
+			/>
+			<circle
+				v-if="drawY !== null"
+				cx="62"
+				:cy="drawY + 1"
+				r="2.6"
+				:class="['connector-point', `accent-fill-${fillTone}`]"
 			/>
 
 			<!-- Barrel outline overlay -->
@@ -106,7 +125,7 @@
 				height="162"
 				rx="4"
 				fill="none"
-				stroke="#2d3748"
+				class="barrel-outline"
 				stroke-width="1.5"
 			/>
 		</svg>
@@ -114,7 +133,7 @@
 		<!-- Unit marker bubble -->
 		<div
 			v-if="clampedUnits > 0"
-			class="unit-bubble"
+			:class="['unit-bubble', `bubble-${fillTone}`]"
 			:style="{ top: bubbleTop + 'px' }"
 		>
 			{{ clampedUnits.toFixed(0) }}u
@@ -145,16 +164,22 @@
 		return BARREL_BTM - fillFraction.value * BARREL_H;
 	});
 
-	const fillColor = computed(() => {
-		if (props.units > props.maxUnits) return '#ff4f4f';
-		if (props.units > props.maxUnits * 0.85) return '#f5a623';
-		return '#00d4b8';
+	const fillClass = computed(() => {
+		if (props.units > props.maxUnits) return 'fill-danger';
+		if (props.units > props.maxUnits * 0.85) return 'fill-warning';
+		return 'fill-success';
+	});
+
+	const fillTone = computed(() => {
+		if (props.units > props.maxUnits) return 'danger';
+		if (props.units > props.maxUnits * 0.85) return 'warning';
+		return 'success';
 	});
 
 	// For the floating bubble: map drawY (SVG coords 30–192) → pixel coords
-	// SVG viewBox height = 220, rendered height ~180px
+	// SVG viewBox height = 220, rendered height ~240px
 	const SVG_H = 220;
-	const RENDER_H = 180;
+	const RENDER_H = 240;
 
 	const bubbleTop = computed(() => {
 		if (drawY.value === null) return 0;
@@ -163,28 +188,106 @@
 </script>
 
 <style lang="less" scoped>
+	@import '../assets/main.less';
+
 	.syringe-wrap {
 		position: relative;
 		display: inline-block;
 	}
 
+	.fill-level {
+		transition:
+			height 0.4s ease,
+			fill 0.3s ease;
+	}
+
+	.fill-success {
+		fill: @teal;
+	}
+
+	.fill-warning {
+		fill: @amber;
+	}
+
+	.fill-danger {
+		fill: @red;
+	}
+
+	.accent-success {
+		stroke: @teal;
+	}
+
+	.accent-warning {
+		stroke: @amber;
+	}
+
+	.accent-danger {
+		stroke: @red;
+	}
+
+	.accent-fill-success {
+		fill: @teal;
+	}
+
+	.accent-fill-warning {
+		fill: @amber;
+	}
+
+	.accent-fill-danger {
+		fill: @red;
+	}
+
+	.needle-part {
+		fill: @text-muted;
+	}
+
+	.barrel-body {
+		fill: @surface;
+		stroke: @border;
+	}
+
+	.plunger-rod,
+	.plunger-head {
+		fill: @border;
+	}
+
+	.plunger-head {
+		stroke: @text-muted;
+	}
+
+	.tick-marks {
+		stroke: @border;
+	}
+
+	.unit-label {
+		fill: @text-muted;
+	}
+
+	.barrel-outline {
+		stroke: @border;
+	}
+
 	.syringe-svg {
-		width: 80px;
-		height: 180px;
+		width: 110px;
+		height: 240px;
+		overflow: visible;
 	}
 
 	.unit-bubble {
 		position: absolute;
-		right: -48px;
-		background: #00d4b8;
-		color: #0d1117;
+		right: -56px;
 		font-family: 'IBM Plex Mono', monospace;
-		font-size: 0.68rem;
+		font-size: 0.75rem;
 		font-weight: 600;
 		padding: 2px 6px;
 		border-radius: 4px;
 		white-space: nowrap;
 		pointer-events: none;
+	}
+
+	.bubble-success {
+		background: @teal;
+		color: @bg;
 
 		&::before {
 			content: '';
@@ -196,7 +299,43 @@
 			height: 0;
 			border-top: 4px solid transparent;
 			border-bottom: 4px solid transparent;
-			border-right: 5px solid #00d4b8;
+			border-right: 5px solid @teal;
+		}
+	}
+
+	.bubble-warning {
+		background: @amber;
+		color: @bg;
+
+		&::before {
+			content: '';
+			position: absolute;
+			left: -5px;
+			top: 50%;
+			transform: translateY(-50%);
+			width: 0;
+			height: 0;
+			border-top: 4px solid transparent;
+			border-bottom: 4px solid transparent;
+			border-right: 5px solid @amber;
+		}
+	}
+
+	.bubble-danger {
+		background: @red;
+		color: @text;
+
+		&::before {
+			content: '';
+			position: absolute;
+			left: -5px;
+			top: 50%;
+			transform: translateY(-50%);
+			width: 0;
+			height: 0;
+			border-top: 4px solid transparent;
+			border-bottom: 4px solid transparent;
+			border-right: 5px solid @red;
 		}
 	}
 </style>
