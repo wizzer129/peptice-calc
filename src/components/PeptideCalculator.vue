@@ -1,357 +1,369 @@
 <template>
-	<div class="calc-app">
-		<!-- Header -->
-		<header class="app-header">
-			<div class="header-inner">
-				<div class="logo">
-					<span class="logo-icon">⬡</span>
-					<span class="logo-text">PeptideCalc</span>
-				</div>
-				<p class="header-sub">Reconstitution &amp; Dosage Calculator</p>
-			</div>
-		</header>
+  <div class="calc-app">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-inner">
+        <div class="logo">
+          <span class="logo-icon">⬡</span>
+          <span class="logo-text">PeptideCalc</span>
+        </div>
+        <p class="header-sub">
+          Reconstitution &amp; Dosage Calculator
+        </p>
+      </div>
+    </header>
 
-		<main class="calc-main">
-			<!-- Peptide Selector -->
-			<section class="peptide-select-section">
-				<label class="field-label">SELECT PEPTIDE</label>
-				<div class="select-wrapper">
-					<select
-						v-model="selectedPeptide"
-						@change="applyPreset"
-						class="peptide-select"
-					>
-						<option value="">— Custom / No Preset —</option>
-						<optgroup
-							v-for="group in peptideGroups"
-							:key="group.label"
-							:label="group.label"
-						>
-							<option
-								v-for="p in group.peptides"
-								:key="p.id"
-								:value="p.id"
-							>
-								{{ p.name }}
-							</option>
-						</optgroup>
-					</select>
-					<span class="select-arrow">▾</span>
-				</div>
+    <main class="calc-main">
+      <!-- Peptide Selector -->
+      <section class="peptide-select-section">
+        <label class="field-label">SELECT PEPTIDE</label>
+        <div class="select-wrapper">
+          <select
+            v-model="selectedPeptide"
+            class="peptide-select"
+            @change="applyPreset"
+          >
+            <option value="">
+              — Custom / No Preset —
+            </option>
+            <optgroup
+              v-for="group in peptideGroups"
+              :key="group.label"
+              :label="group.label"
+            >
+              <option
+                v-for="p in group.peptides"
+                :key="p.id"
+                :value="p.id"
+              >
+                {{ p.name }}
+              </option>
+            </optgroup>
+          </select>
+          <span class="select-arrow">▾</span>
+        </div>
 
-				<!-- Preset badge -->
-				<transition name="fade">
-					<div v-if="currentPeptide" class="preset-badge">
-						<span class="badge-dot"></span>
-						<span class="badge-name">{{
-							currentPeptide.name
-						}}</span>
-						<span class="badge-desc">{{
-							currentPeptide.description
-						}}</span>
-					</div>
-				</transition>
-			</section>
+        <!-- Preset badge -->
+        <transition name="fade">
+          <div
+            v-if="currentPeptide"
+            class="preset-badge"
+          >
+            <span class="badge-dot" />
+            <span class="badge-name">{{
+              currentPeptide.name
+            }}</span>
+            <span class="badge-desc">{{
+              currentPeptide.description
+            }}</span>
+          </div>
+        </transition>
+      </section>
 
-			<!-- 3-column inputs -->
-			<section class="inputs-grid">
-				<!-- Dose -->
-				<div class="input-card">
-					<div class="card-header">
-						<span class="card-num">01</span>
-						<div>
-							<h3 class="card-title">Desired Dose</h3>
-							<p class="card-hint">per injection</p>
-						</div>
-					</div>
+      <!-- 3-column inputs -->
+      <section class="inputs-grid">
+        <!-- Dose -->
+        <div class="input-card">
+          <div class="card-header">
+            <span class="card-num">01</span>
+            <div>
+              <h3 class="card-title">
+                Desired Dose
+              </h3>
+              <p class="card-hint">
+                per injection
+              </p>
+            </div>
+          </div>
 
-					<div class="chip-group">
-						<button
-							v-for="v in doseOptions"
-							:key="v"
-							class="chip"
-							:class="{
-								active: dose === v,
-								recommended:
-									currentPeptide &&
-									currentPeptide.defaults.dose === v,
-							}"
-							@click="
-								dose = v;
-								customDose = '';
-							"
-						>
-							{{ v }}mg<span
-								v-if="
-									currentPeptide &&
-									currentPeptide.defaults.dose === v
-								"
-								class="rec-dot"
-								title="Recommended"
-								>★</span
-							>
-						</button>
-					</div>
+          <div class="chip-group">
+            <button
+              v-for="v in doseOptions"
+              :key="v"
+              class="chip"
+              :class="{
+                active: dose === v,
+                recommended:
+                  currentPeptide &&
+                  currentPeptide.defaults.dose === v,
+              }"
+              @click="
+                dose = v;
+                customDose = '';
+              "
+            >
+              {{ v }}mg<span
+                v-if="
+                  currentPeptide &&
+                    currentPeptide.defaults.dose === v
+                "
+                class="rec-dot"
+                title="Recommended"
+              >★</span>
+            </button>
+          </div>
 
-					<div class="custom-row">
-						<label class="custom-label">Custom (mg)</label>
-						<input
-							type="number"
-							class="custom-input"
-							v-model="customDose"
-							@input="dose = null"
-							placeholder="e.g. 0.3"
-							min="0.001"
-							step="0.001"
-						/>
-					</div>
+          <div class="custom-row">
+            <label class="custom-label">Custom (mg)</label>
+            <input
+              v-model="customDose"
+              type="number"
+              class="custom-input"
+              placeholder="e.g. 0.3"
+              min="0.001"
+              step="0.001"
+              @input="dose = null"
+            >
+          </div>
 
-					<div class="active-val">
-						<span class="av-label">DOSE</span>
-						<span class="av-num"
-							>{{ displayDose
-							}}<span class="av-unit">mg</span></span
-						>
-						<span class="av-mcg" v-if="effectiveDose"
-							>= {{ (effectiveDose * 1000).toFixed(0) }} mcg</span
-						>
-					</div>
-				</div>
+          <div class="active-val">
+            <span class="av-label">DOSE</span>
+            <span class="av-num">{{ displayDose
+            }}<span class="av-unit">mg</span></span>
+            <span
+              v-if="effectiveDose"
+              class="av-mcg"
+            >= {{ (effectiveDose * 1000).toFixed(0) }} mcg</span>
+          </div>
+        </div>
 
-				<!-- Vial Strength -->
-				<div class="input-card">
-					<div class="card-header">
-						<span class="card-num">02</span>
-						<div>
-							<h3 class="card-title">Vial Strength</h3>
-							<p class="card-hint">total peptide in vial</p>
-						</div>
-					</div>
+        <!-- Vial Strength -->
+        <div class="input-card">
+          <div class="card-header">
+            <span class="card-num">02</span>
+            <div>
+              <h3 class="card-title">
+                Vial Strength
+              </h3>
+              <p class="card-hint">
+                total peptide in vial
+              </p>
+            </div>
+          </div>
 
-					<div class="chip-group">
-						<button
-							v-for="v in strengthOptions"
-							:key="v"
-							class="chip"
-							:class="{
-								active: strength === v,
-								recommended:
-									currentPeptide &&
-									currentPeptide.defaults.strength === v,
-							}"
-							@click="
-								strength = v;
-								customStrength = '';
-							"
-						>
-							{{ v }}mg<span
-								v-if="
-									currentPeptide &&
-									currentPeptide.defaults.strength === v
-								"
-								class="rec-dot"
-								title="Recommended"
-								>★</span
-							>
-						</button>
-					</div>
+          <div class="chip-group">
+            <button
+              v-for="v in strengthOptions"
+              :key="v"
+              class="chip"
+              :class="{
+                active: strength === v,
+                recommended:
+                  currentPeptide &&
+                  currentPeptide.defaults.strength === v,
+              }"
+              @click="
+                strength = v;
+                customStrength = '';
+              "
+            >
+              {{ v }}mg<span
+                v-if="
+                  currentPeptide &&
+                    currentPeptide.defaults.strength === v
+                "
+                class="rec-dot"
+                title="Recommended"
+              >★</span>
+            </button>
+          </div>
 
-					<div class="custom-row">
-						<label class="custom-label">Custom (mg)</label>
-						<input
-							type="number"
-							class="custom-input"
-							v-model="customStrength"
-							@input="strength = null"
-							placeholder="e.g. 20"
-							min="0.1"
-							step="0.1"
-						/>
-					</div>
+          <div class="custom-row">
+            <label class="custom-label">Custom (mg)</label>
+            <input
+              v-model="customStrength"
+              type="number"
+              class="custom-input"
+              placeholder="e.g. 20"
+              min="0.1"
+              step="0.1"
+              @input="strength = null"
+            >
+          </div>
 
-					<div class="active-val">
-						<span class="av-label">VIAL</span>
-						<span class="av-num"
-							>{{ displayStrength
-							}}<span class="av-unit">mg</span></span
-						>
-					</div>
-				</div>
+          <div class="active-val">
+            <span class="av-label">VIAL</span>
+            <span class="av-num">{{ displayStrength
+            }}<span class="av-unit">mg</span></span>
+          </div>
+        </div>
 
-				<!-- Bac Water -->
-				<div class="input-card">
-					<div class="card-header">
-						<span class="card-num">03</span>
-						<div>
-							<h3 class="card-title">Bac Water</h3>
-							<p class="card-hint">bacteriostatic water added</p>
-						</div>
-					</div>
+        <!-- Bac Water -->
+        <div class="input-card">
+          <div class="card-header">
+            <span class="card-num">03</span>
+            <div>
+              <h3 class="card-title">
+                Bac Water
+              </h3>
+              <p class="card-hint">
+                bacteriostatic water added
+              </p>
+            </div>
+          </div>
 
-					<div class="chip-group">
-						<button
-							v-for="v in waterOptions"
-							:key="v"
-							class="chip"
-							:class="{
-								active: water === v,
-								recommended:
-									currentPeptide &&
-									currentPeptide.defaults.water === v,
-							}"
-							@click="
-								water = v;
-								customWater = '';
-							"
-						>
-							{{ v }}mL<span
-								v-if="
-									currentPeptide &&
-									currentPeptide.defaults.water === v
-								"
-								class="rec-dot"
-								title="Recommended"
-								>★</span
-							>
-						</button>
-					</div>
+          <div class="chip-group">
+            <button
+              v-for="v in waterOptions"
+              :key="v"
+              class="chip"
+              :class="{
+                active: water === v,
+                recommended:
+                  currentPeptide &&
+                  currentPeptide.defaults.water === v,
+              }"
+              @click="
+                water = v;
+                customWater = '';
+              "
+            >
+              {{ v }}mL<span
+                v-if="
+                  currentPeptide &&
+                    currentPeptide.defaults.water === v
+                "
+                class="rec-dot"
+                title="Recommended"
+              >★</span>
+            </button>
+          </div>
 
-					<div class="custom-row">
-						<label class="custom-label">Custom (mL)</label>
-						<input
-							type="number"
-							class="custom-input"
-							v-model="customWater"
-							@input="water = null"
-							placeholder="e.g. 2.5"
-							min="0.1"
-							step="0.1"
-						/>
-					</div>
+          <div class="custom-row">
+            <label class="custom-label">Custom (mL)</label>
+            <input
+              v-model="customWater"
+              type="number"
+              class="custom-input"
+              placeholder="e.g. 2.5"
+              min="0.1"
+              step="0.1"
+              @input="water = null"
+            >
+          </div>
 
-					<div class="active-val">
-						<span class="av-label">WATER</span>
-						<span class="av-num"
-							>{{ displayWater
-							}}<span class="av-unit">mL</span></span
-						>
-					</div>
-				</div>
-			</section>
+          <div class="active-val">
+            <span class="av-label">WATER</span>
+            <span class="av-num">{{ displayWater
+            }}<span class="av-unit">mL</span></span>
+          </div>
+        </div>
+      </section>
 
-			<!-- Results -->
-			<transition name="slide-up">
-				<section class="results-section" v-if="hasAllValues">
-					<div class="results-grid">
-						<!-- Syringe visual -->
-						<div class="syringe-panel">
-							<h3 class="syringe-title">DRAW VISUALIZATION</h3>
-							<SyringeVisual
-								:units="syringeUnits"
-								:max-units="100"
-							/>
-							<p class="syringe-caption">
-								Draw to
-								<strong
-									>{{ syringeUnits.toFixed(1) }} units</strong
-								>
-								on a 100-unit syringe
-							</p>
-							<p class="syringe-ml">
-								= {{ drawVolume.toFixed(3) }} mL
-							</p>
-						</div>
+      <!-- Results -->
+      <transition name="slide-up">
+        <section
+          v-if="hasAllValues"
+          class="results-section"
+        >
+          <div class="results-grid">
+            <!-- Syringe visual -->
+            <div class="syringe-panel">
+              <h3 class="syringe-title">
+                DRAW VISUALIZATION
+              </h3>
+              <SyringeVisual
+                :units="syringeUnits"
+                :max-units="100"
+              />
+              <p class="syringe-caption">
+                Draw to
+                <strong>{{ syringeUnits.toFixed(1) }} units</strong>
+                on a 100-unit syringe
+              </p>
+              <p class="syringe-ml">
+                = {{ drawVolume.toFixed(3) }} mL
+              </p>
+            </div>
 
-						<!-- Stat cards -->
-						<div class="stat-cards">
-							<div class="stat-card" :class="statusClass">
-								<span class="stat-label">PEPTIDE DOSE</span>
-								<span class="stat-value"
-									>{{ effectiveDose }}
-									<span class="stat-unit">mg</span>
-								</span>
-								<span class="stat-mcg"
-									>{{
-										(effectiveDose * 1000).toFixed(0)
-									}}
-									mcg</span
-								>
-								<div
-									v-if="statusMsg"
-									class="status-badge"
-									:class="statusClass"
-								>
-									{{ statusMsg }}
-								</div>
-							</div>
+            <!-- Stat cards -->
+            <div class="stat-cards">
+              <div
+                class="stat-card"
+                :class="statusClass"
+              >
+                <span class="stat-label">PEPTIDE DOSE</span>
+                <span class="stat-value">{{ effectiveDose }}
+                  <span class="stat-unit">mg</span>
+                </span>
+                <span class="stat-mcg">{{
+                  (effectiveDose * 1000).toFixed(0)
+                }}
+                  mcg</span>
+                <div
+                  v-if="statusMsg"
+                  class="status-badge"
+                  :class="statusClass"
+                >
+                  {{ statusMsg }}
+                </div>
+              </div>
 
-							<div class="stat-card">
-								<span class="stat-label">DRAW SYRINGE TO</span>
-								<span class="stat-value"
-									>{{ syringeUnits.toFixed(1) }}
-									<span class="stat-unit">units</span>
-								</span>
-								<span class="stat-mcg"
-									>{{ drawVolume.toFixed(3) }} mL</span
-								>
-							</div>
+              <div class="stat-card">
+                <span class="stat-label">DRAW SYRINGE TO</span>
+                <span class="stat-value">{{ syringeUnits.toFixed(1) }}
+                  <span class="stat-unit">units</span>
+                </span>
+                <span class="stat-mcg">{{ drawVolume.toFixed(3) }} mL</span>
+              </div>
 
-							<div class="stat-card">
-								<span class="stat-label">DOSES PER VIAL</span>
-								<span class="stat-value"
-									>{{ dosesPerVial.toFixed(1) }}
-									<span class="stat-unit">doses</span>
-								</span>
-								<span class="stat-mcg">full doses</span>
-							</div>
+              <div class="stat-card">
+                <span class="stat-label">DOSES PER VIAL</span>
+                <span class="stat-value">{{ dosesPerVial.toFixed(1) }}
+                  <span class="stat-unit">doses</span>
+                </span>
+                <span class="stat-mcg">full doses</span>
+              </div>
 
-							<div class="stat-card highlight">
-								<span class="stat-label">CONCENTRATION</span>
-								<span class="stat-value"
-									>{{ concentration.toFixed(3) }}
-									<span class="stat-unit">mg/mL</span>
-								</span>
-								<span class="stat-mcg"
-									>{{
-										(concentration * 1000).toFixed(0)
-									}}
-									mcg/mL</span
-								>
-							</div>
-						</div>
-					</div>
+              <div class="stat-card highlight">
+                <span class="stat-label">CONCENTRATION</span>
+                <span class="stat-value">{{ concentration.toFixed(3) }}
+                  <span class="stat-unit">mg/mL</span>
+                </span>
+                <span class="stat-mcg">{{
+                  (concentration * 1000).toFixed(0)
+                }}
+                  mcg/mL</span>
+              </div>
+            </div>
+          </div>
 
-					<!-- Advice banner from preset -->
-					<transition name="fade">
-						<div
-							v-if="currentPeptide && currentPeptide.notes"
-							class="notes-banner"
-						>
-							<span class="notes-icon">ℹ</span>
-							<div>
-								<strong>{{ currentPeptide.name }} Notes</strong>
-								<p>{{ currentPeptide.notes }}</p>
-							</div>
-						</div>
-					</transition>
-				</section>
-			</transition>
+          <!-- Advice banner from preset -->
+          <transition name="fade">
+            <div
+              v-if="currentPeptide && currentPeptide.notes"
+              class="notes-banner"
+            >
+              <span class="notes-icon">ℹ</span>
+              <div>
+                <strong>{{ currentPeptide.name }} Notes</strong>
+                <p>{{ currentPeptide.notes }}</p>
+              </div>
+            </div>
+          </transition>
+        </section>
+      </transition>
 
-			<!-- Placeholder when not enough inputs -->
-			<div v-if="!hasAllValues" class="empty-state">
-				<div class="empty-icon">⟩_</div>
-				<p>Enter all three values above to see results</p>
-			</div>
+      <!-- Placeholder when not enough inputs -->
+      <div
+        v-if="!hasAllValues"
+        class="empty-state"
+      >
+        <div class="empty-icon">
+          ⟩_
+        </div>
+        <p>Enter all three values above to see results</p>
+      </div>
 
-			<!-- Disclaimer -->
-			<footer class="disclaimer">
-				<strong>Research Use Only.</strong> This calculator is for
-				informational and research purposes only. Not intended for human
-				use, medical advice, or clinical application. Always consult a
-				qualified professional.
-			</footer>
-		</main>
-	</div>
+      <!-- Disclaimer -->
+      <footer class="disclaimer">
+        <strong>Research Use Only.</strong> This calculator is for
+        informational and research purposes only. Not intended for human
+        use, medical advice, or clinical application. Always consult a
+        qualified professional.
+      </footer>
+    </main>
+  </div>
 </template>
 
 <script setup>
@@ -360,164 +372,164 @@ import SyringeVisual from './SyringeVisual.vue';
 
 // ─── Peptide database ─────────────────────────────────────────────────────────
 const peptideGroups = [
-	{
-		label: 'GLP-1 / Weight Management',
-		peptides: [
-			{
-				id: 'semaglutide',
-				name: 'Semaglutide',
-				description: 'GLP-1 receptor agonist',
-				defaults: { dose: 0.25, strength: 5, water: 2 },
-				notes: 'Start at 0.25mg/week; titrate slowly. Common reconstitution: 5mg in 2mL bac water.',
-			},
-			{
-				id: 'tirzepatide',
-				name: 'Tirzepatide',
-				description: 'GLP-1 / GIP dual agonist',
-				defaults: { dose: 2.5, strength: 10, water: 2 },
-				notes: 'Begin at 2.5mg weekly. Titrate by 2.5mg every 4 weeks as tolerated.',
-			},
-			{
-				id: 'retatrutide',
-				name: 'Retatrutide',
-				description: 'Triple agonist GLP-1/GIP/Glucagon',
-				defaults: { dose: 2, strength: 10, water: 2 },
-				notes: 'Start at 2mg per week. Titrate carefully — more potent than semaglutide.',
-			},
-			{
-				id: 'glp2',
-				name: 'GLP-2',
-				description: 'Intestinal trophic peptide',
-				defaults: { dose: 0.5, strength: 5, water: 2 },
-				notes: 'Typical dose range: 0.5–2mg. Often used 2mL reconstitution.',
-			},
-		],
-	},
-	{
-		label: 'Recovery & Repair',
-		peptides: [
-			{
-				id: 'bpc157',
-				name: 'BPC-157',
-				description: 'Body Protection Compound',
-				defaults: { dose: 0.25, strength: 10, water: 3 },
-				notes: 'Common dose: 250–500mcg per injection. Reconstitute 10mg in 3mL for convenient dosing.',
-			},
-			{
-				id: 'tb500',
-				name: 'TB-500 (Thymosin β4)',
-				description: 'Tissue healing & regeneration',
-				defaults: { dose: 2.5, strength: 10, water: 2 },
-				notes: 'Loading phase: 4–8mg/week for 4–6 weeks. Maintenance: 2–2.5mg biweekly.',
-			},
-			{
-				id: 'bpc157tb500',
-				name: 'BPC-157 + TB-500 Blend',
-				description: 'Synergistic repair blend',
-				defaults: { dose: 0.5, strength: 10, water: 3 },
-				notes: 'Blend usually 50/50. Dose each component accordingly.',
-			},
-		],
-	},
-	{
-		label: 'Growth Hormone Peptides',
-		peptides: [
-			{
-				id: 'ipamorelin',
-				name: 'Ipamorelin',
-				description: 'Selective GH secretagogue',
-				defaults: { dose: 0.1, strength: 5, water: 3 },
-				notes: 'Typical dose: 100–300mcg per injection, 1–3× daily.',
-			},
-			{
-				id: 'cjc1295',
-				name: 'CJC-1295',
-				description: 'GHRH analogue (with DAC)',
-				defaults: { dose: 1, strength: 5, water: 3 },
-				notes: 'DAC form: 1mg twice weekly. No-DAC form: dose more frequently like GHRH.',
-			},
-			{
-				id: 'ghrp2',
-				name: 'GHRP-2',
-				description: 'GH releasing peptide-2',
-				defaults: { dose: 0.1, strength: 5, water: 3 },
-				notes: '100mcg typical dose, 2–3× daily. Stack with GHRH for synergy.',
-			},
-			{
-				id: 'tesamorelin',
-				name: 'Tesamorelin',
-				description: 'GHRH analogue',
-				defaults: { dose: 1, strength: 10, water: 2 },
-				notes: 'Standard dose: 1mg subcutaneous daily. Often reconstituted in 2mL.',
-			},
-			{
-				id: 'sermorelin',
-				name: 'Sermorelin',
-				description: 'GHRH(1-29) fragment',
-				defaults: { dose: 0.2, strength: 15, water: 3 },
-				notes: 'Dose range: 200–500mcg before bed. Longer acting at lower doses.',
-			},
-			{
-				id: 'hexarelin',
-				name: 'Hexarelin',
-				description: 'Potent GH secretagogue',
-				defaults: { dose: 0.1, strength: 5, water: 3 },
-				notes: '100mcg typical. Down-regulates with chronic use — cycle off regularly.',
-			},
-		],
-	},
-	{
-		label: 'Cognitive & Other',
-		peptides: [
-			{
-				id: 'nad',
-				name: 'NAD+',
-				description: 'Nicotinamide adenine dinucleotide',
-				defaults: { dose: 50, strength: 1000, water: 5 },
-				notes: 'IV: 500–1000mg over several hours. Sub-Q: 50–100mg per injection. Reconstitute 1000mg in 5mL.',
-			},
-			{
-				id: 'selank',
-				name: 'Selank',
-				description: 'Anxiolytic / cognitive peptide',
-				defaults: { dose: 0.25, strength: 5, water: 3 },
-				notes: 'Typical dose: 250mcg intranasally or sub-Q, 1–2× daily.',
-			},
-			{
-				id: 'semax',
-				name: 'Semax',
-				description: 'Cognitive enhancer (ACTH analogue)',
-				defaults: { dose: 0.3, strength: 30, water: 3 },
-				notes: 'Dose range: 300–600mcg. Commonly used intranasally.',
-			},
-			{
-				id: 'motsc',
-				name: 'MOTS-c',
-				description: 'Mitochondrial peptide',
-				defaults: { dose: 5, strength: 10, water: 2 },
-				notes: 'Dose range: 5–15mg, 1–3× weekly. Start at lower end.',
-			},
-			{
-				id: 'pt141',
-				name: 'PT-141 (Bremelanotide)',
-				description: 'Sexual function peptide',
-				defaults: { dose: 1, strength: 10, water: 3 },
-				notes: 'Typical dose: 1–2mg sub-Q, 1 hour before activity.',
-			},
-			{
-				id: 'dsip',
-				name: 'DSIP',
-				description: 'Delta sleep-inducing peptide',
-				defaults: { dose: 0.25, strength: 5, water: 3 },
-				notes: 'Common dose: 100–500mcg. Administer in the evening.',
-			},
-		],
-	},
+    {
+        label: 'GLP-1 / Weight Management',
+        peptides: [
+            {
+                id: 'semaglutide',
+                name: 'Semaglutide',
+                description: 'GLP-1 receptor agonist',
+                defaults: { dose: 0.25, strength: 5, water: 2 },
+                notes: 'Start at 0.25mg/week; titrate slowly. Common reconstitution: 5mg in 2mL bac water.',
+            },
+            {
+                id: 'tirzepatide',
+                name: 'Tirzepatide',
+                description: 'GLP-1 / GIP dual agonist',
+                defaults: { dose: 2.5, strength: 10, water: 2 },
+                notes: 'Begin at 2.5mg weekly. Titrate by 2.5mg every 4 weeks as tolerated.',
+            },
+            {
+                id: 'retatrutide',
+                name: 'Retatrutide',
+                description: 'Triple agonist GLP-1/GIP/Glucagon',
+                defaults: { dose: 2, strength: 10, water: 2 },
+                notes: 'Start at 2mg per week. Titrate carefully — more potent than semaglutide.',
+            },
+            {
+                id: 'glp2',
+                name: 'GLP-2',
+                description: 'Intestinal trophic peptide',
+                defaults: { dose: 0.5, strength: 5, water: 2 },
+                notes: 'Typical dose range: 0.5–2mg. Often used 2mL reconstitution.',
+            },
+        ],
+    },
+    {
+        label: 'Recovery & Repair',
+        peptides: [
+            {
+                id: 'bpc157',
+                name: 'BPC-157',
+                description: 'Body Protection Compound',
+                defaults: { dose: 0.25, strength: 10, water: 3 },
+                notes: 'Common dose: 250–500mcg per injection. Reconstitute 10mg in 3mL for convenient dosing.',
+            },
+            {
+                id: 'tb500',
+                name: 'TB-500 (Thymosin β4)',
+                description: 'Tissue healing & regeneration',
+                defaults: { dose: 2.5, strength: 10, water: 2 },
+                notes: 'Loading phase: 4–8mg/week for 4–6 weeks. Maintenance: 2–2.5mg biweekly.',
+            },
+            {
+                id: 'bpc157tb500',
+                name: 'BPC-157 + TB-500 Blend',
+                description: 'Synergistic repair blend',
+                defaults: { dose: 0.5, strength: 10, water: 3 },
+                notes: 'Blend usually 50/50. Dose each component accordingly.',
+            },
+        ],
+    },
+    {
+        label: 'Growth Hormone Peptides',
+        peptides: [
+            {
+                id: 'ipamorelin',
+                name: 'Ipamorelin',
+                description: 'Selective GH secretagogue',
+                defaults: { dose: 0.1, strength: 5, water: 3 },
+                notes: 'Typical dose: 100–300mcg per injection, 1–3× daily.',
+            },
+            {
+                id: 'cjc1295',
+                name: 'CJC-1295',
+                description: 'GHRH analogue (with DAC)',
+                defaults: { dose: 1, strength: 5, water: 3 },
+                notes: 'DAC form: 1mg twice weekly. No-DAC form: dose more frequently like GHRH.',
+            },
+            {
+                id: 'ghrp2',
+                name: 'GHRP-2',
+                description: 'GH releasing peptide-2',
+                defaults: { dose: 0.1, strength: 5, water: 3 },
+                notes: '100mcg typical dose, 2–3× daily. Stack with GHRH for synergy.',
+            },
+            {
+                id: 'tesamorelin',
+                name: 'Tesamorelin',
+                description: 'GHRH analogue',
+                defaults: { dose: 1, strength: 10, water: 2 },
+                notes: 'Standard dose: 1mg subcutaneous daily. Often reconstituted in 2mL.',
+            },
+            {
+                id: 'sermorelin',
+                name: 'Sermorelin',
+                description: 'GHRH(1-29) fragment',
+                defaults: { dose: 0.2, strength: 15, water: 3 },
+                notes: 'Dose range: 200–500mcg before bed. Longer acting at lower doses.',
+            },
+            {
+                id: 'hexarelin',
+                name: 'Hexarelin',
+                description: 'Potent GH secretagogue',
+                defaults: { dose: 0.1, strength: 5, water: 3 },
+                notes: '100mcg typical. Down-regulates with chronic use — cycle off regularly.',
+            },
+        ],
+    },
+    {
+        label: 'Cognitive & Other',
+        peptides: [
+            {
+                id: 'nad',
+                name: 'NAD+',
+                description: 'Nicotinamide adenine dinucleotide',
+                defaults: { dose: 50, strength: 1000, water: 5 },
+                notes: 'IV: 500–1000mg over several hours. Sub-Q: 50–100mg per injection. Reconstitute 1000mg in 5mL.',
+            },
+            {
+                id: 'selank',
+                name: 'Selank',
+                description: 'Anxiolytic / cognitive peptide',
+                defaults: { dose: 0.25, strength: 5, water: 3 },
+                notes: 'Typical dose: 250mcg intranasally or sub-Q, 1–2× daily.',
+            },
+            {
+                id: 'semax',
+                name: 'Semax',
+                description: 'Cognitive enhancer (ACTH analogue)',
+                defaults: { dose: 0.3, strength: 30, water: 3 },
+                notes: 'Dose range: 300–600mcg. Commonly used intranasally.',
+            },
+            {
+                id: 'motsc',
+                name: 'MOTS-c',
+                description: 'Mitochondrial peptide',
+                defaults: { dose: 5, strength: 10, water: 2 },
+                notes: 'Dose range: 5–15mg, 1–3× weekly. Start at lower end.',
+            },
+            {
+                id: 'pt141',
+                name: 'PT-141 (Bremelanotide)',
+                description: 'Sexual function peptide',
+                defaults: { dose: 1, strength: 10, water: 3 },
+                notes: 'Typical dose: 1–2mg sub-Q, 1 hour before activity.',
+            },
+            {
+                id: 'dsip',
+                name: 'DSIP',
+                description: 'Delta sleep-inducing peptide',
+                defaults: { dose: 0.25, strength: 5, water: 3 },
+                notes: 'Common dose: 100–500mcg. Administer in the evening.',
+            },
+        ],
+    },
 ];
 
 // Flatten for lookup
 const peptideMap = Object.fromEntries(
-	peptideGroups.flatMap((g) => g.peptides).map((p) => [p.id, p])
+    peptideGroups.flatMap((g) => g.peptides).map((p) => [p.id, p])
 );
 
 // ─── State ────────────────────────────────────────────────────────────────────
@@ -535,41 +547,41 @@ const waterOptions = [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 5.0];
 
 // ─── Computed ─────────────────────────────────────────────────────────────────
 const currentPeptide = computed(
-	() => peptideMap[selectedPeptide.value] ?? null
+    () => peptideMap[selectedPeptide.value] ?? null
 );
 
 const effectiveDose = computed(() => {
-	const v = parseFloat(customDose.value);
-	return dose.value !== null ? dose.value : v || null;
+    const v = parseFloat(customDose.value);
+    return dose.value !== null ? dose.value : v || null;
 });
 const effectiveStrength = computed(() => {
-	const v = parseFloat(customStrength.value);
-	return strength.value !== null ? strength.value : v || null;
+    const v = parseFloat(customStrength.value);
+    return strength.value !== null ? strength.value : v || null;
 });
 const effectiveWater = computed(() => {
-	const v = parseFloat(customWater.value);
-	return water.value !== null ? water.value : v || null;
+    const v = parseFloat(customWater.value);
+    return water.value !== null ? water.value : v || null;
 });
 
 const hasAllValues = computed(
-	() => effectiveDose.value && effectiveStrength.value && effectiveWater.value
+    () => effectiveDose.value && effectiveStrength.value && effectiveWater.value
 );
 
 const concentration = computed(() => {
-	if (!hasAllValues.value) return 0;
-	return effectiveStrength.value / effectiveWater.value;
+    if (!hasAllValues.value) return 0;
+    return effectiveStrength.value / effectiveWater.value;
 });
 
 const drawVolume = computed(() => {
-	if (!hasAllValues.value) return 0;
-	return effectiveDose.value / concentration.value;
+    if (!hasAllValues.value) return 0;
+    return effectiveDose.value / concentration.value;
 });
 
 const syringeUnits = computed(() => drawVolume.value * 100);
 
 const dosesPerVial = computed(() => {
-	if (!hasAllValues.value) return 0;
-	return effectiveStrength.value / effectiveDose.value;
+    if (!hasAllValues.value) return 0;
+    return effectiveStrength.value / effectiveDose.value;
 });
 
 const displayDose = computed(() => effectiveDose.value ?? '–');
@@ -577,31 +589,31 @@ const displayStrength = computed(() => effectiveStrength.value ?? '–');
 const displayWater = computed(() => effectiveWater.value ?? '–');
 
 const statusMsg = computed(() => {
-	if (!hasAllValues.value) return null;
-	if (syringeUnits.value > 100) return 'Decrease water — over 100 units';
-	if (syringeUnits.value < 1) return 'Increase water — very low draw';
-	if (effectiveDose.value > effectiveStrength.value)
-		return 'Not enough peptide in vial';
-	return null;
+    if (!hasAllValues.value) return null;
+    if (syringeUnits.value > 100) return 'Decrease water — over 100 units';
+    if (syringeUnits.value < 1) return 'Increase water — very low draw';
+    if (effectiveDose.value > effectiveStrength.value)
+        return 'Not enough peptide in vial';
+    return null;
 });
 
 const statusClass = computed(() => {
-	if (!statusMsg.value) return 'ok';
-	if (statusMsg.value.startsWith('Not')) return 'error';
-	return 'warn';
+    if (!statusMsg.value) return 'ok';
+    if (statusMsg.value.startsWith('Not')) return 'error';
+    return 'warn';
 });
 
 // ─── Methods ──────────────────────────────────────────────────────────────────
 function applyPreset() {
-	const p = currentPeptide.value;
-	if (!p) return;
-	const d = p.defaults;
-	dose.value = d.dose;
-	strength.value = d.strength;
-	water.value = d.water;
-	customDose.value = '';
-	customStrength.value = '';
-	customWater.value = '';
+    const p = currentPeptide.value;
+    if (!p) return;
+    const d = p.defaults;
+    dose.value = d.dose;
+    strength.value = d.strength;
+    water.value = d.water;
+    customDose.value = '';
+    customStrength.value = '';
+    customWater.value = '';
 }
 </script>
 

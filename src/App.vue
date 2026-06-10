@@ -1,5 +1,5 @@
 <template>
-	<PeptideCalculator />
+  <PeptideCalculator />
 </template>
 
 <script setup>
