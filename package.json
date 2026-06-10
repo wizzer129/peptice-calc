@@ -7,10 +7,10 @@
 		"dev": "vite",
 		"build": "vite build",
 		"preview": "vite preview",
-		"format": "prettier --check .",
-		"format:fix": "prettier --write .",
-		"lint": "eslint . --ext .js,.vue",
-		"lint:fix": "eslint . --ext .js,.vue --fix"
+		"format": "prettier --check \"**/*.{js,vue}\"",
+		"format:fix": "prettier --write \"**/*.{js,vue}\"",
+		"lint": "eslint . ",
+		"lint:fix": "eslint . --fix"
 	},
 	"dependencies": {
 		"less": "4.6.4",

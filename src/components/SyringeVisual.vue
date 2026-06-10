@@ -182,40 +182,40 @@ const bubbleTop = computed(() => {
 </script>
 
 <style lang="less" scoped>
-.syringe-wrap {
-	position: relative;
-	display: inline-block;
-}
-
-.syringe-svg {
-	width: 80px;
-	height: 180px;
-}
-
-.unit-bubble {
-	position: absolute;
-	right: -48px;
-	background: #00d4b8;
-	color: #0d1117;
-	font-family: 'IBM Plex Mono', monospace;
-	font-size: 0.68rem;
-	font-weight: 600;
-	padding: 2px 6px;
-	border-radius: 4px;
-	white-space: nowrap;
-	pointer-events: none;
-
-	&::before {
-		content: '';
-		position: absolute;
-		left: -5px;
-		top: 50%;
-		transform: translateY(-50%);
-		width: 0;
-		height: 0;
-		border-top: 4px solid transparent;
-		border-bottom: 4px solid transparent;
-		border-right: 5px solid #00d4b8;
+	.syringe-wrap {
+		position: relative;
+		display: inline-block;
 	}
-}
+
+	.syringe-svg {
+		width: 80px;
+		height: 180px;
+	}
+
+	.unit-bubble {
+		position: absolute;
+		right: -48px;
+		background: #00d4b8;
+		color: #0d1117;
+		font-family: 'IBM Plex Mono', monospace;
+		font-size: 0.68rem;
+		font-weight: 600;
+		padding: 2px 6px;
+		border-radius: 4px;
+		white-space: nowrap;
+		pointer-events: none;
+
+		&::before {
+			content: '';
+			position: absolute;
+			left: -5px;
+			top: 50%;
+			transform: translateY(-50%);
+			width: 0;
+			height: 0;
+			border-top: 4px solid transparent;
+			border-bottom: 4px solid transparent;
+			border-right: 5px solid #00d4b8;
+		}
+	}
 </style>
