@@ -1,0 +1,51 @@
+// Tokens
+@bg: #0d1117;
+@surface: #161b22;
+@surface2: #1e2530;
+@border: #2d3748;
+@teal: #00d4b8;
+@teal-dim: #00a896;
+@amber: #f5a623;
+@red: #ff4f4f;
+@text: #e6edf3;
+@text-muted: #8b949e;
+@mono: 'IBM Plex Mono', monospace;
+@sans: 'Inter', sans-serif;
+@radius: 8px;
+@radius-lg: 12px;
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+html {
+	font-size: 16px;
+}
+
+body {
+	background: @bg;
+	color: @text;
+	font-family: @sans;
+	min-height: 100vh;
+	line-height: 1.6;
+}
+
+#app {
+	min-height: 100vh;
+}
+
+// Scrollbar
+::-webkit-scrollbar {
+	width: 6px;
+}
+::-webkit-scrollbar-track {
+	background: @bg;
+}
+::-webkit-scrollbar-thumb {
+	background: @border;
+	border-radius: 3px;
+}
