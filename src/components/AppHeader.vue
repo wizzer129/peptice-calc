@@ -24,9 +24,49 @@
 	@import '../assets/main.less';
 
 	.app-header {
-		border-bottom: 1px solid @border;
+		position: relative;
 		background: @surface;
 		padding: 20px 0;
+
+		&::before {
+			content: '';
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			height: 2px;
+			background: linear-gradient(
+				90deg,
+				transparent 0%,
+				transparent 40%,
+				@teal 50%,
+				@teal 70%,
+				transparent 80%,
+				transparent 100%
+			);
+			background-size: 200% 100%;
+			animation: sweep-border 2s linear 1 forwards;
+		}
+
+		// &::after {
+		// 	content: '';
+		// 	position: absolute;
+		// 	bottom: 0;
+		// 	left: 0;
+		// 	right: 0;
+		// 	height: 2px;
+		// 	background: @border;
+		// 	z-index: -1;
+		// }
+	}
+
+	@keyframes sweep-border {
+		0% {
+			background-position: 175% 0;
+		}
+		100% {
+			background-position: -105% 0;
+		}
 	}
 
 	.header-inner {
