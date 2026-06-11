@@ -554,6 +554,10 @@
 			align-self: flex-start;
 			padding: 20px 10px;
 		}
+
+		@media (max-width: 1023px) {
+			display: none;
+		}
 	}
 
 	.badge-dot {
@@ -607,11 +611,12 @@
 		justify-items: stretch;
 
 		@media (min-width: 1600px) {
-			gap: 24px;
+			gap: 16px 0px;
 		}
 
 		@media (max-width: 800px) {
 			grid-template-columns: 1fr;
+			gap: 16px 0px;
 		}
 	}
 
@@ -629,9 +634,9 @@
 
 	.syringe-title {
 		font-family: @mono;
-		font-size: 0.68rem;
+		font-size: 1rem;
 		letter-spacing: 0.12em;
-		color: @text-muted;
+		color: @text;
 		margin-bottom: 20px;
 	}
 
