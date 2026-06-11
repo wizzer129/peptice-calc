@@ -521,8 +521,7 @@
 		align-items: center;
 		align-self: flex-end;
 		gap: 10px;
-		max-width: 420px;
-		height: 46px;
+		min-height: 50px;
 		background: fade(@teal, 8%);
 		border: 1px solid fade(@teal, 25%);
 		border-radius: @radius;

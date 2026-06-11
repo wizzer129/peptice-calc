@@ -102,10 +102,9 @@
 
 	.card-num {
 		font-family: @mono;
-		font-size: 0.7rem;
+		font-size: 1.5rem;
+		font-weight: 500;
 		color: @teal;
-		opacity: 0.7;
-		padding-top: 3px;
 		letter-spacing: 0.05em;
 	}
 
@@ -119,7 +118,7 @@
 	.card-hint {
 		font-size: 0.75rem;
 		color: @text-muted;
-		margin-top: 2px;
+		margin-top: auto;
 	}
 
 	.chip-group {
@@ -238,7 +237,7 @@
 	.av-num {
 		font-family: @mono;
 		font-size: 1.4rem;
-		font-weight: 600;
+		font-weight: 500;
 		color: @teal;
 		line-height: 1;
 	}
