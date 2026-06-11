@@ -52,16 +52,17 @@
 	.field-label {
 		display: block;
 		font-family: @mono;
-		font-size: 0.7rem;
+		font-size: 0.9rem;
+		font-weight: 600;
 		letter-spacing: 0.12em;
-		color: @text-muted;
+		color: @text;
 		margin-bottom: 8px;
 	}
 
 	.select-wrapper {
 		position: relative;
 		width: 100%;
-		z-index: 10;
+		min-width: 0;
 
 		@media (min-width: 768px) {
 			max-width: 335px;
@@ -69,6 +70,7 @@
 	}
 
 	.peptide-select {
+		display: block;
 		width: 100%;
 		appearance: none;
 		background: @surface;
@@ -82,8 +84,6 @@
 		outline: none;
 		box-shadow: none;
 		transition: border-color 0.15s;
-		position: relative;
-		z-index: 10;
 
 		&:focus {
 			border-color: @teal;
@@ -106,6 +106,12 @@
 			background: @surface;
 			color: @text;
 		}
+
+		@media (max-width: 767px) {
+			appearance: auto;
+			-webkit-appearance: menulist;
+			padding-right: 12px;
+		}
 	}
 
 	.select-arrow {
@@ -116,5 +122,9 @@
 		color: @teal;
 		font-size: 0.9rem;
 		pointer-events: none;
+
+		@media (max-width: 767px) {
+			display: none;
+		}
 	}
 </style>
