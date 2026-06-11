@@ -28,7 +28,7 @@
 
 	.stat-card {
 		background: @surface;
-		border: 1px solid @border;
+		border: 2px solid @border;
 		border-radius: @radius-lg;
 		padding: 22px;
 		display: flex;
@@ -37,9 +37,13 @@
 		gap: 12px;
 		height: 100%;
 
+		&:hover:not(.highlight) {
+			border-color: fade(@teal, 90%);
+		}
+
 		&.highlight {
-			border-color: fade(@teal, 35%);
-			background: fade(@teal, 5%);
+			border-color: fade(@teal, 100%);
+			background: fade(@teal, 35%);
 		}
 
 		&.warn {

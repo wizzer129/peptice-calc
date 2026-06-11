@@ -11,19 +11,30 @@
 @text-muted: #8b949e;
 @mono: 'IBM Plex Mono', monospace;
 @sans: 'Inter', sans-serif;
+@sans-bold: 'Inter Bold', sans-serif;
 @radius: 8px;
 @radius-lg: 12px;
 
-*,
-*::before,
-*::after {
-	box-sizing: border-box;
-	margin: 0;
-	padding: 0;
-}
+// ── Browser Normalization ─────────────────────────────────────────────────────
+@import './normalize.less';
+
+// ── App-Specific Styles ───────────────────────────────────────────────────────
 
 html {
 	font-size: 16px;
+	-webkit-text-size-adjust: 100%;
+}
+
+@media (min-width: 1600px) {
+	html {
+		font-size: 17px;
+	}
+}
+
+@media (min-width: 2560px) {
+	html {
+		font-size: 18px;
+	}
 }
 
 body {

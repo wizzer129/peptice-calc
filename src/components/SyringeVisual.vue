@@ -78,7 +78,7 @@
 				:key="'t' + i"
 				x="14"
 				:y="30 + i * 16 + 4"
-				font-family="IBM Plex Mono, monospace"
+				font-family="Inter, sans-serif"
 				font-size="8"
 				class="unit-label"
 				text-anchor="middle"
@@ -276,7 +276,7 @@
 	.unit-bubble {
 		position: absolute;
 		right: -56px;
-		font-family: 'IBM Plex Mono', monospace;
+		font-family: @sans;
 		font-size: 0.75rem;
 		font-weight: 600;
 		padding: 2px 6px;

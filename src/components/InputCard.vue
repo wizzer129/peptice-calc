@@ -81,7 +81,7 @@
 
 	.input-card {
 		background: @surface;
-		border: 1px solid @border;
+		border: 2px solid @border;
 		border-radius: @radius-lg;
 		padding: 24px;
 		display: flex;
@@ -90,7 +90,7 @@
 		transition: border-color 0.2s;
 
 		&:hover {
-			border-color: fade(@teal, 30%);
+			border-color: fade(@teal, 90%);
 		}
 	}
 
@@ -141,7 +141,7 @@
 		color: @text;
 		border-radius: 6px;
 		padding: 5px 10px;
-		font-family: @mono;
+		font-family: @sans;
 		font-size: 0.78rem;
 		cursor: pointer;
 		transition: all 0.12s;
@@ -195,10 +195,18 @@
 		font-size: 0.85rem;
 		padding: 7px 10px;
 		outline: none;
+		box-shadow: none;
 		transition: border-color 0.15s;
 
 		&:focus {
 			border-color: @teal;
+			outline: none;
+			box-shadow: none;
+		}
+
+		&:focus-visible {
+			outline: none;
+			box-shadow: none;
 		}
 
 		&::placeholder {
@@ -236,14 +244,14 @@
 	}
 
 	.av-unit {
-		font-size: 0.75rem;
+		font-size: 0.95rem;
 		color: @text;
 		margin-left: 2px;
 	}
 
 	.av-mcg {
-		font-family: @mono;
-		font-size: 0.72rem;
+		font-family: @sans;
+		font-size: 0.95rem;
 		color: @text;
 		margin-left: 4px;
 	}
