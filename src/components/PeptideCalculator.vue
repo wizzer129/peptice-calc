@@ -1,209 +1,209 @@
 <template>
-  <div class="calc-app">
-    <FluidHexBackground />
+	<div class="calc-app">
+		<FluidHexBackground />
 
-    <div class="calc-content">
-      <AppHeader />
+		<div class="calc-content">
+			<AppHeader />
 
-      <main class="calc-main">
-        <!-- Peptide Selector -->
-        <section class="peptide-select-section">
-          <div class="peptide-select-main">
-            <PeptideDropdown
-              v-model="selectedPeptide"
-              :groups="peptideGroups"
-              @change="applyPreset"
-            />
+			<main class="calc-main">
+				<!-- Peptide Selector -->
+				<section class="peptide-select-section">
+					<div class="peptide-select-main">
+						<PeptideDropdown
+							v-model="selectedPeptide"
+							:groups="peptideGroups"
+							@change="applyPreset"
+						/>
 
-            <p class="preset-help">
-              Selecting a peptide will load and highlight an
-              example of values, not recommendations.
-            </p>
-          </div>
+						<p class="preset-help">
+							Selecting a peptide will load and highlight an
+							example of values, not recommendations.
+						</p>
+					</div>
 
-          <!-- Preset badge -->
-          <transition name="fade">
-            <div
-              v-if="currentPeptide"
-              class="preset-badge"
-            >
-              <span class="badge-dot" />
-              <span class="badge-name">{{
-                currentPeptide.name
-              }}</span>
-              <span class="badge-desc">{{
-                currentPeptide.description
-              }}</span>
-            </div>
-          </transition>
-        </section>
+					<!-- Preset badge -->
+					<transition name="fade">
+						<div
+							v-if="currentPeptide"
+							class="preset-badge"
+						>
+							<span class="badge-dot" />
+							<span class="badge-name">{{
+								currentPeptide.name
+							}}</span>
+							<span class="badge-desc">{{
+								currentPeptide.description
+							}}</span>
+						</div>
+					</transition>
+				</section>
 
-        <!-- 3-column inputs -->
-        <section class="inputs-grid">
-          <InputCard
-            num="01"
-            title="Desired Dose"
-            hint="per injection"
-            :options="doseOptions"
-            unit="mg"
-            :chip="dose"
-            :custom="customDose"
-            custom-placeholder="e.g. 0.3"
-            :custom-min="0.001"
-            :custom-step="0.001"
-            :preset-value="currentPeptide?.defaults.dose ?? null"
-            av-label="DOSE"
-            :display-value="displayDose"
-            :mcg="
-              effectiveDose
-                ? `${(effectiveDose * 1000).toFixed(0)} mcg`
-                : null
-            "
-            @update:chip="
-              dose = $event;
-              customDose = '';
-            "
-            @update:custom="
-              customDose = $event;
-              dose = null;
-            "
-          />
+				<!-- 3-column inputs -->
+				<section class="inputs-grid">
+					<InputCard
+						num="01"
+						title="Desired Dose"
+						hint="per injection"
+						:options="doseOptions"
+						unit="mg"
+						:chip="dose"
+						:custom="customDose"
+						custom-placeholder="e.g. 0.3"
+						:custom-min="0.001"
+						:custom-step="0.001"
+						:preset-value="currentPeptide?.defaults.dose ?? null"
+						av-label="DOSE"
+						:display-value="displayDose"
+						:mcg="
+							effectiveDose
+								? `${(effectiveDose * 1000).toFixed(0)} mcg`
+								: null
+						"
+						@update:chip="
+							dose = $event;
+							customDose = '';
+						"
+						@update:custom="
+							customDose = $event;
+							dose = null;
+						"
+					/>
 
-          <InputCard
-            num="02"
-            title="Vial Strength"
-            hint="total peptide in vial"
-            :options="strengthOptions"
-            unit="mg"
-            :chip="strength"
-            :custom="customStrength"
-            custom-placeholder="e.g. 20"
-            :custom-min="0.1"
-            :custom-step="0.1"
-            :preset-value="
-              currentPeptide?.defaults.strength ?? null
-            "
-            av-label="VIAL"
-            :display-value="displayStrength"
-            @update:chip="
-              strength = $event;
-              customStrength = '';
-            "
-            @update:custom="
-              customStrength = $event;
-              strength = null;
-            "
-          />
+					<InputCard
+						num="02"
+						title="Vial Strength"
+						hint="total peptide in vial"
+						:options="strengthOptions"
+						unit="mg"
+						:chip="strength"
+						:custom="customStrength"
+						custom-placeholder="e.g. 20"
+						:custom-min="0.1"
+						:custom-step="0.1"
+						:preset-value="
+							currentPeptide?.defaults.strength ?? null
+						"
+						av-label="VIAL"
+						:display-value="displayStrength"
+						@update:chip="
+							strength = $event;
+							customStrength = '';
+						"
+						@update:custom="
+							customStrength = $event;
+							strength = null;
+						"
+					/>
 
-          <InputCard
-            num="03"
-            title="Bac Water"
-            hint="bacteriostatic water added"
-            :options="waterOptions"
-            unit="mL"
-            :chip="water"
-            :custom="customWater"
-            custom-placeholder="e.g. 2.5"
-            :custom-min="0.1"
-            :custom-step="0.1"
-            :preset-value="currentPeptide?.defaults.water ?? null"
-            av-label="WATER"
-            :display-value="displayWater"
-            @update:chip="
-              water = $event;
-              customWater = '';
-            "
-            @update:custom="
-              customWater = $event;
-              water = null;
-            "
-          />
-        </section>
+					<InputCard
+						num="03"
+						title="Bac Water"
+						hint="bacteriostatic water added"
+						:options="waterOptions"
+						unit="mL"
+						:chip="water"
+						:custom="customWater"
+						custom-placeholder="e.g. 2.5"
+						:custom-min="0.1"
+						:custom-step="0.1"
+						:preset-value="currentPeptide?.defaults.water ?? null"
+						av-label="WATER"
+						:display-value="displayWater"
+						@update:chip="
+							water = $event;
+							customWater = '';
+						"
+						@update:custom="
+							customWater = $event;
+							water = null;
+						"
+					/>
+				</section>
 
-        <!-- Results -->
-        <transition name="slide-up">
-          <section
-            v-if="hasAllValues"
-            class="results-section"
-          >
-            <div class="results-grid">
-              <!-- Syringe visual -->
-              <div class="syringe-panel">
-                <h3 class="syringe-title">
-                  DRAW VISUALIZATION
-                </h3>
-                <SyringeVisual
-                  :units="syringeUnits"
-                  :max-units="100"
-                />
-                <p class="syringe-caption">
-                  Draw to
-                  <strong>{{
-                    syringeUnits.toFixed(1)
-                  }}
-                    units</strong>
-                  on a 100-unit syringe
-                </p>
-                <p class="syringe-ml">
-                  = {{ drawVolume.toFixed(3) }} mL
-                </p>
-              </div>
+				<!-- Results -->
+				<transition name="slide-up">
+					<section
+						v-if="hasAllValues"
+						class="results-section"
+					>
+						<div class="results-grid">
+							<!-- Syringe visual -->
+							<div class="syringe-panel">
+								<h3 class="syringe-title">
+									DRAW VISUALIZATION
+								</h3>
+								<SyringeVisual
+									:units="syringeUnits"
+									:max-units="100"
+								/>
+								<p class="syringe-caption">
+									Draw to
+									<strong>{{
+										syringeUnits.toFixed(1)
+									}}
+										units</strong>
+									on a 100-unit syringe
+								</p>
+								<p class="syringe-ml">
+									= {{ drawVolume.toFixed(3) }} mL
+								</p>
+							</div>
 
-              <!-- Stat cards -->
-              <div class="stat-cards">
-                <StatCard
-                  label="PEPTIDE DOSE"
-                  :value="effectiveDose"
-                  unit="mg"
-                  :sub="`${(effectiveDose * 1000).toFixed(0)} mcg`"
-                  :status-msg="statusMsg"
-                  :status-class="statusClass"
-                />
-                <StatCard
-                  label="DRAW SYRINGE TO"
-                  :value="syringeUnits.toFixed(1)"
-                  unit="units"
-                  :sub="`${drawVolume.toFixed(3)} mL`"
-                />
-                <StatCard
-                  label="DOSES PER VIAL"
-                  :value="dosesPerVial.toFixed(1)"
-                  unit="doses"
-                  sub="full doses"
-                />
-                <StatCard
-                  label="CONCENTRATION"
-                  :value="concentration.toFixed(3)"
-                  unit="mg/mL"
-                  :sub="`${(concentration * 1000).toFixed(0)} mcg/mL`"
-                  :highlight="true"
-                />
-              </div>
-            </div>
-          </section>
-        </transition>
+							<!-- Stat cards -->
+							<div class="stat-cards">
+								<StatCard
+									label="PEPTIDE DOSE"
+									:value="effectiveDose"
+									unit="mg"
+									:sub="`${(effectiveDose * 1000).toFixed(0)} mcg`"
+									:status-msg="statusMsg"
+									:status-class="statusClass"
+								/>
+								<StatCard
+									label="DRAW SYRINGE TO"
+									:value="syringeUnits.toFixed(1)"
+									unit="units"
+									:sub="`${drawVolume.toFixed(3)} mL`"
+								/>
+								<StatCard
+									label="DOSES PER VIAL"
+									:value="dosesPerVial.toFixed(1)"
+									unit="doses"
+									sub="full doses"
+								/>
+								<StatCard
+									label="CONCENTRATION"
+									:value="concentration.toFixed(3)"
+									unit="mg/mL"
+									:sub="`${(concentration * 1000).toFixed(0)} mcg/mL`"
+									:highlight="true"
+								/>
+							</div>
+						</div>
+					</section>
+				</transition>
 
-        <!-- Placeholder when not enough inputs -->
-        <div
-          v-if="!hasAllValues"
-          class="empty-state"
-        >
-          <div class="empty-icon">
-            ⬡
-          </div>
-          <p>Enter all three values above to see results</p>
-        </div>
+				<!-- Placeholder when not enough inputs -->
+				<div
+					v-if="!hasAllValues"
+					class="empty-state"
+				>
+					<div class="empty-icon">
+						⬡
+					</div>
+					<p>Enter all three values above to see results</p>
+				</div>
 
-        <!-- Disclaimer -->
-        <footer class="disclaimer">
-          <strong>Research Use Only</strong> This calculator is for
-          informational and research purposes only. Not intended for
-          human use, medical advice, or clinical application. Always
-          consult with a qualified professional.
-        </footer>
-      </main>
-    </div>
-  </div>
+				<!-- Disclaimer -->
+				<footer class="disclaimer">
+					<strong>Research Use Only</strong> This calculator is for
+					informational and research purposes only. Not intended for
+					human use, medical advice, or clinical application. Always
+					consult with a qualified professional.
+				</footer>
+			</main>
+		</div>
+	</div>
 </template>
 
 <script setup>

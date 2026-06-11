@@ -1,15 +1,15 @@
 <template>
-  <header class="app-header">
-    <div class="header-inner">
-      <div class="logo">
-        <span class="logo-icon">⬡</span>
-        <span class="logo-text">{{ title }}</span>
-      </div>
-      <p class="header-sub">
-        {{ subtitle }}
-      </p>
-    </div>
-  </header>
+	<header class="app-header">
+		<div class="header-inner">
+			<div class="logo">
+				<span class="logo-icon">⬡</span>
+				<span class="logo-text">{{ title }}</span>
+			</div>
+			<p class="header-sub">
+				{{ subtitle }}
+			</p>
+		</div>
+	</header>
 </template>
 
 <script setup>

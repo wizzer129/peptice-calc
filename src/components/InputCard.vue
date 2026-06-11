@@ -1,62 +1,62 @@
 <template>
-  <div class="input-card">
-    <div class="card-header">
-      <span class="card-num">{{ num }}</span>
-      <div>
-        <h3 class="card-title">
-          {{ title }}
-        </h3>
-        <p class="card-hint">
-          {{ hint }}
-        </p>
-      </div>
-    </div>
+	<div class="input-card">
+		<div class="card-header">
+			<span class="card-num">{{ num }}</span>
+			<div>
+				<h3 class="card-title">
+					{{ title }}
+				</h3>
+				<p class="card-hint">
+					{{ hint }}
+				</p>
+			</div>
+		</div>
 
-    <div class="chip-group">
-      <button
-        v-for="v in options"
-        :key="v"
-        class="chip"
-        :class="{
-          active: chip === v,
-          preset: presetValue === v,
-        }"
-        @click="$emit('update:chip', v)"
-      >
-        {{ v }}{{ unit
-        }}<span
-          v-if="presetValue === v"
-          class="rec-dot"
-          title="Preset default"
-        >★</span>
-      </button>
-    </div>
+		<div class="chip-group">
+			<button
+				v-for="v in options"
+				:key="v"
+				class="chip"
+				:class="{
+					active: chip === v,
+					preset: presetValue === v,
+				}"
+				@click="$emit('update:chip', v)"
+			>
+				{{ v }}{{ unit
+				}}<span
+					v-if="presetValue === v"
+					class="rec-dot"
+					title="Preset default"
+				>★</span>
+			</button>
+		</div>
 
-    <div class="input-section">
-      <div class="custom-row">
-        <label class="custom-label">Custom ({{ unit }})</label>
-        <input
-          :value="custom"
-          type="number"
-          class="custom-input"
-          :placeholder="customPlaceholder"
-          :min="customMin"
-          :step="customStep"
-          @input="$emit('update:custom', $event.target.value)"
-        >
-      </div>
+		<div class="input-section">
+			<div class="custom-row">
+				<label class="custom-label">Custom ({{ unit }})</label>
+				<input
+					:value="custom"
+					type="number"
+					class="custom-input"
+					:placeholder="customPlaceholder"
+					:min="customMin"
+					:step="customStep"
+					@input="$emit('update:custom', $event.target.value)"
+				>
+			</div>
 
-      <div class="active-val">
-        <span class="av-label">{{ avLabel }}</span>
-        <span class="av-num">{{ displayValue
-        }}<span class="av-unit">{{ unit }}</span></span>
-        <span
-          v-if="mcg"
-          class="av-mcg"
-        >= {{ mcg }}</span>
-      </div>
-    </div>
-  </div>
+			<div class="active-val">
+				<span class="av-label">{{ avLabel }}</span>
+				<span class="av-num">{{ displayValue
+				}}<span class="av-unit">{{ unit }}</span></span>
+				<span
+					v-if="mcg"
+					class="av-mcg"
+				>= {{ mcg }}</span>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script setup>

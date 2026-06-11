@@ -1,9 +1,9 @@
 <template>
-  <div
-    ref="mountEl"
-    class="fluid-bg"
-    aria-hidden="true"
-  />
+	<div
+		ref="mountEl"
+		class="fluid-bg"
+		aria-hidden="true"
+	/>
 </template>
 
 <script setup>

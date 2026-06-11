@@ -45,6 +45,16 @@ export default [
 		files: ['**/*.vue'],
 		rules: {
 			indent: 'off',
+			'vue/html-indent': [
+				'error',
+				'tab',
+				{
+					baseIndent: 1,
+					attribute: 1,
+					closeBracket: 0,
+					alignAttributesVertically: true,
+				},
+			],
 			'vue/script-indent': [
 				'error',
 				'tab',
