@@ -16,24 +16,17 @@
 						/>
 
 						<p class="preset-help">
-							Selecting a peptide will load and highlight an
-							example of values, not recommendations.
+							Selecting a peptide will load and highlight an example of possible
+							values. It is NOT a recommendation.
 						</p>
 					</div>
 
 					<!-- Preset badge -->
 					<transition name="fade">
-						<div
-							v-if="currentPeptide"
-							class="preset-badge"
-						>
+						<div v-if="currentPeptide" class="preset-badge">
 							<span class="badge-dot" />
-							<span class="badge-name">{{
-								currentPeptide.name
-							}}</span>
-							<span class="badge-desc">{{
-								currentPeptide.description
-							}}</span>
+							<span class="badge-name">{{ currentPeptide.name }}</span>
+							<span class="badge-desc">{{ currentPeptide.description }}</span>
 						</div>
 					</transition>
 				</section>
@@ -54,11 +47,7 @@
 						:preset-value="currentPeptide?.defaults.dose ?? null"
 						av-label="DOSE"
 						:display-value="displayDose"
-						:mcg="
-							effectiveDose
-								? `${(effectiveDose * 1000).toFixed(0)} mcg`
-								: null
-						"
+						:mcg="effectiveDose ? `${(effectiveDose * 1000).toFixed(0)} mcg` : null"
 						@update:chip="
 							dose = $event;
 							customDose = '';
@@ -80,9 +69,7 @@
 						custom-placeholder="e.g. 20"
 						:custom-min="0.1"
 						:custom-step="0.1"
-						:preset-value="
-							currentPeptide?.defaults.strength ?? null
-						"
+						:preset-value="currentPeptide?.defaults.strength ?? null"
 						av-label="VIAL"
 						:display-value="displayStrength"
 						@update:chip="
@@ -122,31 +109,18 @@
 
 				<!-- Results -->
 				<transition name="slide-up">
-					<section
-						v-if="hasAllValues"
-						class="results-section"
-					>
+					<section v-if="hasAllValues" class="results-section">
 						<div class="results-grid">
 							<!-- Syringe visual -->
 							<div class="syringe-panel">
-								<h3 class="syringe-title">
-									DRAW VISUALIZATION
-								</h3>
-								<SyringeVisual
-									:units="syringeUnits"
-									:max-units="100"
-								/>
+								<h3 class="syringe-title">DRAW VISUALIZATION</h3>
+								<SyringeVisual :units="syringeUnits" :max-units="100" />
 								<p class="syringe-caption">
 									Draw to
-									<strong>{{
-										syringeUnits.toFixed(1)
-									}}
-										units</strong>
+									<strong>{{ syringeUnits.toFixed(1) }} units</strong>
 									on a 100-unit syringe
 								</p>
-								<p class="syringe-ml">
-									= {{ drawVolume.toFixed(3) }} mL
-								</p>
+								<p class="syringe-ml">= {{ drawVolume.toFixed(3) }} mL</p>
 							</div>
 
 							<!-- Stat cards -->
@@ -184,22 +158,16 @@
 				</transition>
 
 				<!-- Placeholder when not enough inputs -->
-				<div
-					v-if="!hasAllValues"
-					class="empty-state"
-				>
-					<div class="empty-icon">
-						⬡
-					</div>
+				<div v-if="!hasAllValues" class="empty-state">
+					<div class="empty-icon">⬡</div>
 					<p>Enter all three values above to see results</p>
 				</div>
 
 				<!-- Disclaimer -->
 				<footer class="disclaimer">
-					<strong>Research Use Only</strong> This calculator is for
-					informational and research purposes only. Not intended for
-					human use, medical advice, or clinical application. Always
-					consult with a qualified professional.
+					<strong>Research Use Only</strong> This calculator is for informational and
+					research purposes only. Not intended for human use, medical advice, or clinical
+					application. Always consult with a qualified professional.
 				</footer>
 			</main>
 		</div>
@@ -368,40 +336,28 @@
 	const customWater = ref('');
 
 	function buildOptions(defaultValues, extraValues = []) {
-		return [...new Set([...defaultValues, ...extraValues])].sort(
-			(a, b) => a - b,
-		);
+		return [...new Set([...defaultValues, ...extraValues])].sort((a, b) => a - b);
 	}
 
 	const doseOptions = buildOptions(
-		peptideGroups
-			.map((group) =>
-				group.peptides.map((peptide) => peptide.defaults.dose),
-			)
-			.flat(),
+		peptideGroups.map((group) => group.peptides.map((peptide) => peptide.defaults.dose)).flat(),
 		[7.5, 10, 12.5, 15],
 	);
 	const strengthOptions = buildOptions(
 		peptideGroups
-			.map((group) =>
-				group.peptides.map((peptide) => peptide.defaults.strength),
-			)
+			.map((group) => group.peptides.map((peptide) => peptide.defaults.strength))
 			.flat(),
 		[50, 60, 100],
 	);
 	const waterOptions = buildOptions(
 		peptideGroups
-			.map((group) =>
-				group.peptides.map((peptide) => peptide.defaults.water),
-			)
+			.map((group) => group.peptides.map((peptide) => peptide.defaults.water))
 			.flat(),
 		[0.5, 1, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0],
 	);
 
 	// ─── Computed ─────────────────────────────────────────────────────────────────
-	const currentPeptide = computed(
-		() => peptideMap[selectedPeptide.value] ?? null,
-	);
+	const currentPeptide = computed(() => peptideMap[selectedPeptide.value] ?? null);
 
 	const effectiveDose = computed(() => {
 		const v = parseFloat(customDose.value);
@@ -417,10 +373,7 @@
 	});
 
 	const hasAllValues = computed(
-		() =>
-			effectiveDose.value &&
-			effectiveStrength.value &&
-			effectiveWater.value,
+		() => effectiveDose.value && effectiveStrength.value && effectiveWater.value,
 	);
 
 	const concentration = computed(() => {
@@ -448,8 +401,7 @@
 		if (!hasAllValues.value) return null;
 		if (syringeUnits.value > 100) return 'Decrease water — over 100 units';
 		if (syringeUnits.value < 1) return 'Increase water — very low draw';
-		if (effectiveDose.value > effectiveStrength.value)
-			return 'Not enough peptide in vial';
+		if (effectiveDose.value > effectiveStrength.value) return 'Not enough peptide in vial';
 		return null;
 	});
 

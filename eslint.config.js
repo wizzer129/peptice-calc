@@ -45,21 +45,11 @@ export default [
 		files: ['**/*.vue'],
 		rules: {
 			indent: 'off',
-			'vue/html-indent': [
-				'error',
-				'tab',
-				{
-					baseIndent: 1,
-					attribute: 1,
-					closeBracket: 0,
-					alignAttributesVertically: true,
-				},
-			],
-			'vue/script-indent': [
-				'error',
-				'tab',
-				{ baseIndent: 1, switchCase: 1 },
-			],
+			'vue/html-indent': 'off',
+			'vue/script-indent': 'off',
+			'vue/max-attributes-per-line': 'off',
+			'vue/html-closing-bracket-newline': 'off',
+			'vue/singleline-html-element-content-newline': 'off',
 			quotes: ['error', 'single'],
 			semi: ['error', 'always'],
 			'comma-dangle': ['error', 'always-multiline'],
