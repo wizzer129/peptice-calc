@@ -610,10 +610,6 @@
 		align-items: stretch;
 		justify-items: stretch;
 
-		@media (min-width: 1600px) {
-			gap: 16px 0px;
-		}
-
 		@media (max-width: 800px) {
 			grid-template-columns: 1fr;
 			gap: 16px 0px;
