@@ -33,8 +33,6 @@
 					</button>
 				</div>
 			</div>
-
-			<span v-else class="select-arrow">▾</span>
 		</div>
 	</div>
 </template>
@@ -216,15 +214,5 @@
 			background: fade(@teal, 14%);
 			color: @teal;
 		}
-	}
-
-	.select-arrow {
-		position: absolute;
-		right: 14px;
-		top: 50%;
-		transform: translateY(-50%);
-		color: @teal;
-		font-size: 0.9rem;
-		pointer-events: none;
 	}
 </style>

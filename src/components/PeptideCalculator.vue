@@ -535,6 +535,7 @@
 		line-height: 1.5;
 		color: @text;
 		margin-bottom: 3px;
+		padding: 0 4px;
 	}
 
 	.preset-badge {

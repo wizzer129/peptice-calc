@@ -57,7 +57,7 @@
 
 	.stat-label {
 		font-family: @mono;
-		font-size: 0.92rem;
+		font-size: 1.5rem;
 		font-weight: 600;
 		letter-spacing: 0.1em;
 		color: @text;
@@ -73,14 +73,14 @@
 	}
 
 	.stat-unit {
-		font-size: 0.95rem;
+		font-size: 1rem;
 		color: @text-muted;
 		font-weight: 400;
 	}
 
 	.stat-mcg {
 		font-family: @mono;
-		font-size: 0.82rem;
+		font-size: 1rem;
 		line-height: 1.4;
 		color: @text-muted;
 	}

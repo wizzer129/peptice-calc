@@ -96,9 +96,9 @@
 				v-for="i in [2, 4, 6, 8, 10]"
 				:key="'t' + i"
 				x="14"
-				:y="30 + i * 16 + 3"
+				:y="30 + i * 16 + 4"
 				font-family="Inter, sans-serif"
-				font-size="8"
+				font-size="10"
 				class="unit-label"
 				text-anchor="middle"
 			>
@@ -244,9 +244,9 @@
 	});
 
 	// For the floating bubble: map drawY (SVG coords 30–192) → pixel coords
-	// SVG viewBox height = 220, rendered height ~240px
+	// SVG viewBox height = 220, rendered height ~290px
 	const SVG_H = 220;
-	const RENDER_H = 240;
+	const RENDER_H = 290;
 
 	const bubbleTop = computed(() => {
 		if (drawY.value === null) return 0;
@@ -333,8 +333,8 @@
 	}
 
 	.syringe-svg {
-		width: 110px;
-		height: 240px;
+		width: 122px;
+		height: 290px;
 		overflow: visible;
 	}
 
