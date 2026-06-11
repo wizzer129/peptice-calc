@@ -16,8 +16,8 @@
 						/>
 
 						<p class="preset-help">
-							Selecting a peptide loads an example of the preset
-							values, not recommendations.
+							Selecting a peptide will load and highlight an
+							example of values, not recommendations.
 						</p>
 					</div>
 
@@ -533,7 +533,7 @@
 		max-width: 360px;
 		font-size: 0.78rem;
 		line-height: 1.5;
-		color: @text-muted;
+		color: @text;
 		margin-bottom: 3px;
 	}
 
@@ -543,8 +543,9 @@
 		align-self: flex-end;
 		gap: 10px;
 		min-height: 50px;
-		background: fade(@teal, 8%);
-		border: 1px solid fade(@teal, 25%);
+		border: 1px solid;
+		border-color: fade(@teal, 100%);
+		background: fade(@teal, 35%);
 		border-radius: @radius;
 		padding: 10px 14px;
 
@@ -562,6 +563,7 @@
 		background: @teal;
 		flex-shrink: 0;
 		box-shadow: 0 0 6px @teal;
+		animation: badge-pulse 3s ease-in-out infinite;
 	}
 
 	.badge-name {
@@ -571,7 +573,7 @@
 	}
 
 	.badge-desc {
-		color: @text-muted;
+		color: @text;
 		font-size: 0.82rem;
 	}
 
@@ -723,5 +725,22 @@
 	.slide-up-enter-from {
 		opacity: 0;
 		transform: translateY(12px);
+	}
+
+	@keyframes badge-pulse {
+		0%,
+		100% {
+			box-shadow:
+				0 0 4px fade(@teal, 70%),
+				0 0 0 0 fade(@teal, 0%);
+			transform: scale(1);
+		}
+
+		50% {
+			box-shadow:
+				0 0 10px fade(@teal, 100%),
+				0 0 16px 2px fade(@teal, 24%);
+			transform: scale(1.1);
+		}
 	}
 </style>

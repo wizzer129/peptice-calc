@@ -24,10 +24,9 @@
 			<!-- Fill level (animated) -->
 			<rect
 				x="24"
-				y="192"
+				:y="fillY"
 				width="32"
 				:height="fillHeight"
-				:transform="`translate(0, ${-fillHeight})`"
 				:class="['fill-level', fillClass]"
 				rx="2"
 			/>
@@ -70,6 +69,26 @@
 					:x2="58"
 					:y2="30 + i * 16"
 				/>
+
+				<!-- Extra emphasis ticks requested: 10, 30, 70, 90 units -->
+				<line
+					v-for="u in emphasisTicks"
+					:key="`e-l-${u}`"
+					x1="16"
+					:y1="unitToY(u)"
+					x2="22"
+					:y2="unitToY(u)"
+					stroke-width="1.4"
+				/>
+				<line
+					v-for="u in emphasisTicks"
+					:key="`e-r-${u}`"
+					x1="64"
+					:y1="unitToY(u)"
+					x2="58"
+					:y2="unitToY(u)"
+					stroke-width="1.4"
+				/>
 			</g>
 
 			<!-- Unit labels -->
@@ -77,7 +96,7 @@
 				v-for="i in [2, 4, 6, 8, 10]"
 				:key="'t' + i"
 				x="14"
-				:y="30 + i * 16 + 4"
+				:y="30 + i * 16 + 3"
 				font-family="Inter, sans-serif"
 				font-size="8"
 				class="unit-label"
@@ -86,18 +105,6 @@
 				{{ (10 - i) * 10 }}
 			</text>
 
-			<!-- Draw line indicator -->
-			<line
-				v-if="drawY !== null"
-				x1="20"
-				:y1="drawY"
-				x2="60"
-				:y2="drawY"
-				:class="['draw-line', `accent-${fillTone}`]"
-				stroke-width="1.5"
-				stroke-dasharray="3 2"
-			/>
-
 			<!-- Fill level to label connector -->
 			<line
 				v-if="drawY !== null"
@@ -105,7 +112,7 @@
 				:y1="drawY + 1"
 				x2="108"
 				:y2="drawY + 1"
-				:class="['connector-line', `accent-${fillTone}`]"
+				:class="`accent-${fillTone}`"
 				stroke-width="1.8"
 				stroke-linecap="round"
 			/>
@@ -136,32 +143,92 @@
 			:class="['unit-bubble', `bubble-${fillTone}`]"
 			:style="{ top: bubbleTop + 'px' }"
 		>
-			{{ clampedUnits.toFixed(0) }}u
+			{{ clampedUnits.toFixed(0) }} u
 		</div>
 	</div>
 </template>
 
 <script setup>
-	import { computed } from 'vue';
+	import { computed, onBeforeUnmount, ref, watch } from 'vue';
 
 	const props = defineProps({
 		units: { type: Number, default: 0 },
 		maxUnits: { type: Number, default: 100 },
 	});
 
-	const clampedUnits = computed(() => Math.min(props.units, props.maxUnits));
-	const fillFraction = computed(() => clampedUnits.value / props.maxUnits);
+	const clampedUnits = computed(() =>
+		Math.max(0, Math.min(props.units, props.maxUnits))
+	);
+
+	const animatedUnits = ref(clampedUnits.value);
+	let rafId = null;
+
+	function easeOutCubic(t) {
+		return 1 - Math.pow(1 - t, 3);
+	}
+
+	function animateUnits(from, to) {
+		if (!Number.isFinite(from) || !Number.isFinite(to)) {
+			animatedUnits.value = Number.isFinite(to) ? to : 0;
+			return;
+		}
+
+		if (rafId) cancelAnimationFrame(rafId);
+
+		const duration = 420;
+		const start = performance.now();
+
+		const step = (now) => {
+			const elapsed = now - start;
+			const progress = Math.min(elapsed / duration, 1);
+			const eased = easeOutCubic(progress);
+
+			animatedUnits.value = from + (to - from) * eased;
+
+			if (progress < 1) {
+				rafId = requestAnimationFrame(step);
+			} else {
+				rafId = null;
+			}
+		};
+
+		rafId = requestAnimationFrame(step);
+	}
+
+	watch(
+		clampedUnits,
+		(next, prev) => {
+			const from = Number.isFinite(prev) ? prev : next;
+			animateUnits(from, next);
+		},
+		{ immediate: true }
+	);
+
+	onBeforeUnmount(() => {
+		if (rafId) cancelAnimationFrame(rafId);
+	});
+
+	const fillFraction = computed(() => animatedUnits.value / props.maxUnits);
 
 	// Barrel spans y=30 to y=192 → height=162
 	const BARREL_TOP = 30;
-	const BARREL_BTM = 192;
+	const BARREL_BTM = 191;
 	const BARREL_H = BARREL_BTM - BARREL_TOP;
+	const emphasisTicks = [10, 30, 70, 90];
 
-	const fillHeight = computed(() => fillFraction.value * BARREL_H);
+	function unitToY(unit) {
+		return BARREL_BTM - (unit / props.maxUnits) * BARREL_H;
+	}
+
+	const fillHeight = computed(() =>
+		Math.max(0, fillFraction.value * BARREL_H)
+	);
+
+	const fillY = computed(() => BARREL_BTM - fillHeight.value);
 
 	const drawY = computed(() => {
-		if (!props.units || props.units <= 0) return null;
-		return BARREL_BTM - fillFraction.value * BARREL_H;
+		if (animatedUnits.value <= 0) return null;
+		return fillY.value;
 	});
 
 	const fillClass = computed(() => {
@@ -183,7 +250,7 @@
 
 	const bubbleTop = computed(() => {
 		if (drawY.value === null) return 0;
-		return (drawY.value / SVG_H) * RENDER_H - 10;
+		return (drawY.value / SVG_H) * RENDER_H - 11.5;
 	});
 </script>
 
@@ -196,9 +263,7 @@
 	}
 
 	.fill-level {
-		transition:
-			height 0.4s ease,
-			fill 0.3s ease;
+		transition: fill 0.25s ease;
 	}
 
 	.fill-success {
