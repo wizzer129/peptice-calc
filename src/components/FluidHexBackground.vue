@@ -1,5 +1,9 @@
 <template>
-	<div ref="mountEl" class="fluid-bg" aria-hidden="true" />
+  <div
+    ref="mountEl"
+    class="fluid-bg"
+    aria-hidden="true"
+  />
 </template>
 
 <script setup>
@@ -99,7 +103,7 @@
 			cell.layer.position.set(
 				cell.baseX + xFlow,
 				cell.baseY + yFlow + sway,
-				cell.depth
+				cell.depth,
 			);
 			cell.layer.rotation.z += cell.spin * 0.0025;
 		}

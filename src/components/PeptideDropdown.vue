@@ -1,40 +1,52 @@
 <template>
-	<div class="dropdown">
-		<label class="field-label">{{ label }}</label>
-		<div class="select-wrapper">
-			<button type="button" class="mobile-trigger" @click="toggleMenu">
-				<span class="trigger-label">{{ selectedLabel }}</span>
-				<span class="trigger-arrow" :class="{ open: isOpen }">▾</span>
-			</button>
+  <div class="dropdown">
+    <label class="field-label">{{ label }}</label>
+    <div class="select-wrapper">
+      <button
+        type="button"
+        class="mobile-trigger"
+        @click="toggleMenu"
+      >
+        <span class="trigger-label">{{ selectedLabel }}</span>
+        <span
+          class="trigger-arrow"
+          :class="{ open: isOpen }"
+        >▾</span>
+      </button>
 
-			<div v-if="isOpen" class="mobile-menu">
-				<button
-					type="button"
-					class="menu-option"
-					@click="pickOption('')"
-				>
-					Custom / No Preset
-				</button>
-				<div
-					v-for="group in groups"
-					:key="group.label"
-					class="menu-group"
-				>
-					<div class="menu-group-label">{{ group.label }}</div>
-					<button
-						v-for="p in group.peptides"
-						:key="p.id"
-						type="button"
-						class="menu-option"
-						:class="{ active: modelValue === p.id }"
-						@click="pickOption(p.id)"
-					>
-						{{ p.name }}
-					</button>
-				</div>
-			</div>
-		</div>
-	</div>
+      <div
+        v-if="isOpen"
+        class="mobile-menu"
+      >
+        <button
+          type="button"
+          class="menu-option"
+          @click="pickOption('')"
+        >
+          Custom / No Preset
+        </button>
+        <div
+          v-for="group in groups"
+          :key="group.label"
+          class="menu-group"
+        >
+          <div class="menu-group-label">
+            {{ group.label }}
+          </div>
+          <button
+            v-for="p in group.peptides"
+            :key="p.id"
+            type="button"
+            class="menu-option"
+            :class="{ active: modelValue === p.id }"
+            @click="pickOption(p.id)"
+          >
+            {{ p.name }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
