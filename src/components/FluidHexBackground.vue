@@ -16,7 +16,7 @@
 	let scene;
 	let camera;
 	let frameId;
-	let clock;
+	let startTime = 0;
 	const cells = [];
 
 	function setupScene() {
@@ -74,7 +74,7 @@
 			});
 		}
 
-		clock = new THREE.Clock();
+		startTime = performance.now();
 		resize();
 		animate();
 	}
@@ -90,10 +90,10 @@
 		renderer.setSize(width, height);
 	}
 
-	function animate() {
-		if (!renderer || !scene || !camera || !clock) return;
+	function animate(now = performance.now()) {
+		if (!renderer || !scene || !camera || !startTime) return;
 
-		const t = clock.getElapsedTime();
+		const t = (now - startTime) / 1000;
 
 		for (const cell of cells) {
 			const xFlow = Math.sin(t * cell.driftX + cell.offset) * 1.8;
@@ -141,7 +141,7 @@
 		renderer = undefined;
 		scene = undefined;
 		camera = undefined;
-		clock = undefined;
+		startTime = 0;
 	}
 
 	onMounted(() => {
