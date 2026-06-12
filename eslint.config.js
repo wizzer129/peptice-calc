@@ -50,6 +50,7 @@ export default [
 			'vue/max-attributes-per-line': 'off',
 			'vue/html-closing-bracket-newline': 'off',
 			'vue/singleline-html-element-content-newline': 'off',
+			'vue/html-self-closing': 'off',
 			quotes: ['error', 'single'],
 			semi: ['error', 'always'],
 			'comma-dangle': ['error', 'always-multiline'],

@@ -1,9 +1,5 @@
 <template>
-	<div
-		ref="mountEl"
-		class="fluid-bg"
-		aria-hidden="true"
-	/>
+	<div ref="mountEl" class="fluid-bg" aria-hidden="true" />
 </template>
 
 <script setup>
@@ -100,11 +96,7 @@
 			const yFlow = Math.cos(t * cell.driftY + cell.offset * 0.7) * 1.1;
 			const sway = Math.sin(t * 0.5 + cell.offset) * cell.bob;
 
-			cell.layer.position.set(
-				cell.baseX + xFlow,
-				cell.baseY + yFlow + sway,
-				cell.depth,
-			);
+			cell.layer.position.set(cell.baseX + xFlow, cell.baseY + yFlow + sway, cell.depth);
 			cell.layer.rotation.z += cell.spin * 0.0025;
 		}
 

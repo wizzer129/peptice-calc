@@ -1,16 +1,11 @@
 <template>
-	<div
-		class="stat-card"
-		:class="[{ highlight }, statusClass]"
-	>
+	<div class="stat-card" :class="[{ highlight }, statusClass]">
 		<span class="stat-label">{{ label }}</span>
-		<span class="stat-value">{{ value }} <span class="stat-unit">{{ unit }}</span></span>
-		<span class="stat-mcg">{{ sub }}</span>
-		<div
-			v-if="statusMsg"
-			class="status-badge"
-			:class="statusClass"
+		<span class="stat-value"
+			>{{ value }} <span class="stat-unit">{{ unit }}</span></span
 		>
+		<span class="stat-mcg">{{ sub }}</span>
+		<div v-if="statusMsg" class="status-badge" :class="statusClass">
 			{{ statusMsg }}
 		</div>
 	</div>

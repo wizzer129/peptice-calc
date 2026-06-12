@@ -24,11 +24,7 @@
 				@click="$emit('update:chip', v)"
 			>
 				{{ v }}{{ unit
-				}}<span
-					v-if="presetValue === v"
-					class="rec-dot"
-					title="Preset default"
-				>★</span>
+				}}<span v-if="presetValue === v" class="rec-dot" title="Preset default">★</span>
 			</button>
 		</div>
 
@@ -43,17 +39,15 @@
 					:min="customMin"
 					:step="customStep"
 					@input="$emit('update:custom', $event.target.value)"
-				>
+				/>
 			</div>
 
 			<div class="active-val">
 				<span class="av-label">{{ avLabel }}</span>
-				<span class="av-num">{{ displayValue
-				}}<span class="av-unit">{{ unit }}</span></span>
-				<span
-					v-if="mcg"
-					class="av-mcg"
-				>= {{ mcg }}</span>
+				<span class="av-num"
+					>{{ displayValue }}<span class="av-unit">{{ unit }}</span></span
+				>
+				<span v-if="mcg" class="av-mcg">= {{ mcg }}</span>
 			</div>
 		</div>
 	</div>

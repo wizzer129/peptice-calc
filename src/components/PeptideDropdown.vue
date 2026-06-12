@@ -2,34 +2,16 @@
 	<div class="dropdown">
 		<label class="field-label">{{ label }}</label>
 		<div class="select-wrapper">
-			<button
-				type="button"
-				class="mobile-trigger"
-				@click="toggleMenu"
-			>
+			<button type="button" class="mobile-trigger" @click="toggleMenu">
 				<span class="trigger-label">{{ selectedLabel }}</span>
-				<span
-					class="trigger-arrow"
-					:class="{ open: isOpen }"
-				>▾</span>
+				<span class="trigger-arrow" :class="{ open: isOpen }">▾</span>
 			</button>
 
-			<div
-				v-if="isOpen"
-				class="mobile-menu"
-			>
-				<button
-					type="button"
-					class="menu-option"
-					@click="pickOption('')"
-				>
+			<div v-if="isOpen" class="mobile-menu">
+				<button type="button" class="menu-option" @click="pickOption('')">
 					Custom / No Preset
 				</button>
-				<div
-					v-for="group in groups"
-					:key="group.label"
-					class="menu-group"
-				>
+				<div v-for="group in groups" :key="group.label" class="menu-group">
 					<div class="menu-group-label">
 						{{ group.label }}
 					</div>
@@ -182,11 +164,7 @@
 		}
 
 		&::-webkit-scrollbar-thumb {
-			background: linear-gradient(
-				180deg,
-				fade(@teal, 95%),
-				fade(@teal, 65%)
-			);
+			background: linear-gradient(180deg, fade(@teal, 95%), fade(@teal, 65%));
 			border-radius: 999px;
 			border: 2px solid @surface;
 		}

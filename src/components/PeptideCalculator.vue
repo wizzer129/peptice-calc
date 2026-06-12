@@ -348,7 +348,7 @@
 	const showSectionTwo = ref(false);
 	const showSectionThree = ref(false);
 	const showFooter = ref(false);
- 
+
 	const introTimers = [];
 
 	onMounted(() => {
@@ -738,7 +738,9 @@
 
 	.section-rise-enter-active,
 	.section-rise-leave-active {
-		transition: opacity 0.38s ease, transform 0.38s ease;
+		transition:
+			opacity 0.38s ease,
+			transform 0.38s ease;
 	}
 
 	.section-rise-enter-from,
