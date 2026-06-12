@@ -1,23 +1,10 @@
 <template>
 	<div class="syringe-wrap">
-		<svg
-			viewBox="0 0 80 220"
-			xmlns="http://www.w3.org/2000/svg"
-			class="syringe-svg"
-		>
+		<svg viewBox="0 0 80 220" xmlns="http://www.w3.org/2000/svg" class="syringe-svg">
 			<!-- Needle tip -->
-			<polygon
-				points="40,210 36,198 44,198"
-				class="needle-part"
-			/>
+			<polygon points="40,210 36,198 44,198" class="needle-part" />
 			<!-- Needle shaft -->
-			<rect
-				x="38.5"
-				y="190"
-				width="3"
-				height="10"
-				class="needle-part"
-			/>
+			<rect x="38.5" y="190" width="3" height="10" class="needle-part" />
 
 			<!-- Barrel body -->
 			<rect
@@ -41,14 +28,7 @@
 			/>
 
 			<!-- Plunger rod -->
-			<rect
-				x="36"
-				y="2"
-				width="8"
-				height="34"
-				rx="2"
-				class="plunger-rod"
-			/>
+			<rect x="36" y="2" width="8" height="34" rx="2" class="plunger-rod" />
 			<!-- Plunger head -->
 			<rect
 				x="18"
@@ -61,10 +41,7 @@
 			/>
 
 			<!-- Tick marks -->
-			<g
-				class="tick-marks"
-				stroke-width="1"
-			>
+			<g class="tick-marks" stroke-width="1">
 				<line
 					v-for="i in 10"
 					:key="i"
@@ -168,9 +145,7 @@
 		maxUnits: { type: Number, default: 100 },
 	});
 
-	const clampedUnits = computed(() =>
-		Math.max(0, Math.min(props.units, props.maxUnits)),
-	);
+	const clampedUnits = computed(() => Math.max(0, Math.min(props.units, props.maxUnits)));
 
 	const animatedUnits = ref(clampedUnits.value);
 	let rafId = null;
@@ -232,9 +207,7 @@
 		return BARREL_BTM - (unit / props.maxUnits) * BARREL_H;
 	}
 
-	const fillHeight = computed(() =>
-		Math.max(0, fillFraction.value * BARREL_H),
-	);
+	const fillHeight = computed(() => Math.max(0, fillFraction.value * BARREL_H));
 
 	const fillY = computed(() => BARREL_BTM - fillHeight.value);
 
