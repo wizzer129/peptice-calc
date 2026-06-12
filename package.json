@@ -1,33 +1,36 @@
 {
-	"name": "peptide-calc",
-	"private": true,
-	"version": "0.0.0",
-	"type": "module",
-	"scripts": {
-		"dev": "vite",
-		"build": "vite build",
-		"preview": "vite preview",
-		"test": "vitest",
-		"test:run": "vitest run",
-		"format": "prettier --check \"**/*.{js,vue}\"",
-		"format:fix": "prettier --write \"**/*.{js,vue}\"",
-		"lint": "eslint . ",
-		"lint:fix": "eslint . --fix"
-	},
-	"dependencies": {
-		"less": "4.6.4",
-		"three": "0.184.0",
-		"vue": "3.5.35"
-	},
-	"devDependencies": {
-		"@eslint/js": "10.0.1",
-		"@vitejs/plugin-vue": "6.0.7",
-		"@vue/test-utils": "2.4.11",
-		"eslint": "10.0.1",
-		"eslint-plugin-vue": "10.9.2",
-		"jsdom": "29.1.1",
-		"prettier": "3.8.4",
-		"vite": "8.0.16",
-		"vitest": "4.1.8"
-	}
+  "name": "peptide-calc",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "npm run build && wrangler dev",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "format": "prettier --check \"**/*.{js,vue}\"",
+    "format:fix": "prettier --write \"**/*.{js,vue}\"",
+    "lint": "eslint . ",
+    "lint:fix": "eslint . --fix",
+    "deploy": "npm run build && wrangler deploy"
+  },
+  "dependencies": {
+    "less": "4.6.4",
+    "three": "0.184.0",
+    "vue": "3.5.35"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.40.2",
+    "@eslint/js": "10.0.1",
+    "@vitejs/plugin-vue": "6.0.7",
+    "@vue/test-utils": "2.4.11",
+    "eslint": "10.0.1",
+    "eslint-plugin-vue": "10.9.2",
+    "jsdom": "29.1.1",
+    "prettier": "3.8.4",
+    "vite": "8.0.16",
+    "vitest": "4.1.8",
+    "wrangler": "^4.100.0"
+  }
 }
